@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   provider: ^6.1.2
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +85,35 @@ flutter:
     - images/ic_emotion_satisfied.png
     - images/ic_ihuae_main.png
     - images/toolbar_btn_back.png
+    - images/guide_card/guide_card_day1.png
+    - images/guide_card/guide_card_day2.png
+    - images/guide_card/guide_card_day3.png
+    - images/guide_card/guide_card_day4.png
+    - images/guide_card/guide_card_day5.png
+    - images/guide_card/guide_card_day6.png
+    - images/guide_card/guide_card_day7.png
+    - images/guide_card/guide_card_day8.png
+    - images/guide_card/guide_card_day9.png
+    - images/guide_card/guide_card_day10.png
+    - images/guide_card/guide_card_day11.png
+    - images/guide_card/guide_card_day12.png
+    - images/guide_card/guide_card_day13.png
+    - images/guide_card/guide_card_day14.png
+    - images/guide_card/guide_card_day15.png
+    - images/guide_card/guide_card_day16.png
+    - images/guide_card/guide_card_day17.png
+    - images/guide_card/guide_card_day18.png
+    - images/guide_card/guide_card_day19.png
+    - images/guide_card/guide_card_day10.png
+    - images/guide_card/guide_card_day11.png
+    - images/guide_card/guide_card_day12.png
+    - images/guide_card/guide_card_day13.png
+    - images/guide_card/guide_card_day14.png
+    - images/guide_card/guide_card_day15.png
+    - images/guide_card/guide_card_day16.png
+    - images/guide_card/guide_card_day17.png
+    - images/guide_card/guide_card_day18.png
+    - images/guide_card/guide_card_day19.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_ihuae/home/home_page.dart';
 import 'package:flutter_ihuae/calendar/calendar_page.dart';
@@ -35,9 +36,10 @@ class BasePage extends StatefulWidget {
 
 class _BasePageState extends State<BasePage> {
   int _selectedIndex = 0;
+  double _statusBarHeight = 0.0;
   // static const TextStyle optionStyle =
   //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  List<Widget> _widgetOptions = <Widget>[
+  final List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     CalendarPage(),
     DiaryPage(),
@@ -52,10 +54,14 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
+    _statusBarHeight = MediaQuery.of(context).viewPadding.top;
     return Builder(builder: (context) {
       return Scaffold(
         body: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+          child: Padding(
+            padding: EdgeInsets.only(top: _statusBarHeight),
+            child: _widgetOptions.elementAt(_selectedIndex),
+          ),
         ),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
