@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:flutter_ihuae/home/home_page.dart';
 import 'package:flutter_ihuae/calendar/calendar_page.dart';
@@ -37,8 +36,6 @@ class BasePage extends StatefulWidget {
 class _BasePageState extends State<BasePage> {
   int _selectedIndex = 0;
   double _statusBarHeight = 0.0;
-  // static const TextStyle optionStyle =
-  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     CalendarPage(),

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ChatItem extends StatelessWidget {
-  const ChatItem({super.key});
+  const ChatItem({
+    super.key,
+    required this.messageContent,
+    required this.index,
+  });
+  final String messageContent;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -10,10 +16,11 @@ class ChatItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 65,
-            color: Colors.transparent, // 상단 공간을 포함한 빈 컨테이너
-          ),
+          if (index == 0)
+            Container(
+              height: 47,
+              color: Colors.transparent, // 상단 공간을 포함한 빈 컨테이너
+            ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -21,17 +28,23 @@ class ChatItem extends StatelessWidget {
                 child: Container(
                   margin: EdgeInsets.only(right: 30),
                   constraints: BoxConstraints(maxWidth: 246),
-                  padding: EdgeInsets.all(15),
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.blue, // 배경색을 적절히 수정하세요
-                    borderRadius: BorderRadius.circular(8),
+                    color: Color(0xFFA2AFF8),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(0),
+                    ),
                   ),
                   child: Text(
-                    'Your Content',
+                    messageContent,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white, // 텍스트 색상을 적절히 수정하세요
-                      fontFamily: 'SpoqaHanSansNeoMedium',
+                      color: Color(0xFFF8FAFF), // 텍스트 색상을 적절히 수정하세요
+                      fontFamily: 'SpoqaHanSansNeo',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
