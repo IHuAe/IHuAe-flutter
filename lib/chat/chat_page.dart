@@ -13,12 +13,15 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  bool _isExpaned = false;
+  bool _isExpanded = false;
   //TODO message_data_service 연동하기
   List<String> testMsgTxt = [
     "ladlkfda0",
     "sflslskewojwsala\nslfsdjlfksjfld",
     "한글 한글 한글",
+    "sdd",
+    "sdfds",
+    "afdgeg",
     "한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글한글 한글 한글",
     "alafj;dalkjlaf;akjlajkfkdal;fjal;dkfja;dlfjkafkljalfkjaf;lkj;ldjfa;kldfjalkdfjda;lfkja;dlfkja;lfkdj",
   ];
@@ -38,6 +41,8 @@ class _ChatPageState extends State<ChatPage> {
                 //메세지 말풍선 영역
                 Positioned.fill(
                   child: ListView.builder(
+                    padding:
+                        EdgeInsets.only(top: 64, bottom: 0, left: 0, right: 0),
                     itemCount: testMsgTxt.length, // 채팅 아이템 수에 맞게 조절하세요
                     itemBuilder: (context, index) {
                       return ChatItem(
@@ -50,15 +55,15 @@ class _ChatPageState extends State<ChatPage> {
                   top: 6,
                   left: 0,
                   right: 0,
-                  child: GuideContainer(isExpaned: _isExpaned),
+                  child: GuideContainer(isExpanded: _isExpanded),
                 ),
                 //가이드 텍스트 영역 확장 핸들러
                 Positioned(
                     top: 6,
                     right: 0,
                     child: GuideContainerHandler(
-                      isExpaned: _isExpaned,
-                      isExpanedChanger: _isExpanedChanger,
+                      isExpanded: _isExpanded,
+                      isExpandedChanger: _isExpandedChanger,
                     )),
               ],
             ),
@@ -70,9 +75,9 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void _isExpanedChanger(bool isExpaned) {
+  void _isExpandedChanger(bool isExpanded) {
     setState(() {
-      _isExpaned = isExpaned;
+      _isExpanded = isExpanded;
     });
   }
 }
@@ -135,10 +140,10 @@ class _InputContainerState extends State<InputContainer> {
 class GuideContainer extends StatefulWidget {
   const GuideContainer({
     super.key,
-    required this.isExpaned,
+    required this.isExpanded,
   });
 
-  final bool isExpaned;
+  final bool isExpanded;
 
   @override
   State<GuideContainer> createState() => _GuideContainerState();
@@ -148,7 +153,7 @@ class _GuideContainerState extends State<GuideContainer> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      height: widget.isExpaned ? 87 : 47,
+      height: widget.isExpanded ? 87 : 47,
       padding: EdgeInsets.fromLTRB(16, 16, 4, 17),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -171,11 +176,11 @@ class _GuideContainerState extends State<GuideContainer> {
 class GuideContainerHandler extends StatefulWidget {
   const GuideContainerHandler({
     super.key,
-    required this.isExpaned,
-    required this.isExpanedChanger,
+    required this.isExpanded,
+    required this.isExpandedChanger,
   });
-  final bool isExpaned;
-  final void Function(bool) isExpanedChanger;
+  final bool isExpanded;
+  final void Function(bool) isExpandedChanger;
   @override
   State<StatefulWidget> createState() {
     return _GuideContainerHandlerState();
@@ -187,14 +192,14 @@ class _GuideContainerHandlerState extends State<GuideContainerHandler> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        widget.isExpanedChanger(!widget.isExpaned);
+        widget.isExpandedChanger(!widget.isExpanded);
       },
       child: Container(
         height: 47,
         width: 44,
         child: Transform(
           alignment: Alignment.center,
-          transform: widget.isExpaned
+          transform: widget.isExpanded
               ? Matrix4.rotationX(3.14159)
               : Matrix4.rotationX(0), // 180도 회전,
           child: Image.asset(

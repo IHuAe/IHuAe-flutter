@@ -16,11 +16,6 @@ class ChatItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (index == 0)
-            Container(
-              height: 47,
-              color: Colors.transparent, // 상단 공간을 포함한 빈 컨테이너
-            ),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
