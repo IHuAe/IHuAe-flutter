@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
+import 'package:flutter_ihuae/main.dart';
 
 // 첫번째 페이지
 class HomePage extends StatelessWidget {
@@ -121,122 +120,7 @@ class TopContainer extends StatelessWidget {
                           showDialog(
                             context: context,
                             builder: (dialogContext) {
-                              return Container(
-                                width: double.infinity,
-                                height: double.infinity,
-                                color: Color.fromRGBO(0, 0, 0, 0.6),
-                                alignment: Alignment.center,
-                                child: Container(
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      width: 1.0,
-                                      color: Colors.white,
-                                    ),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  width: 322,
-                                  height: 400,
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Image.asset(
-                                              "images/ic_cancel.png",
-                                              width: 17,
-                                              height: 18,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 11),
-                                      Text(
-                                        "오늘은 어떤 기분이 드나요?",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontFamily: 'SpoqaHanSansNeo',
-                                          fontWeight: FontWeight.w400,
-                                          color: Color(0xFF4A4A4A),
-                                        ),
-                                      ),
-                                      SizedBox(height: 25),
-                                      Expanded(
-                                        child: Placeholder(
-                                            //fallbackHeight: 165,
-                                            ),
-                                      ),
-                                      SizedBox(height: 37),
-                                      Card(
-                                        elevation: 0,
-                                        shadowColor: Colors.white,
-                                        child: Container(
-                                          height: 40,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            border: Border.all(
-                                              width: 1.0,
-                                              color: Color(0xFFB3B3B3),
-                                            ),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
-                                          ),
-                                          child: TextField(
-                                            maxLength: 1,
-                                            decoration: InputDecoration(
-                                                border: InputBorder.none,
-                                                focusedBorder: InputBorder.none,
-                                                counterText: '',
-                                                hintText: '추가로 느끼는 감정을 작성해보세요',
-                                                hintStyle: TextStyle(
-                                                  fontFamily: 'SpoqaHanSansNeo',
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 14,
-                                                  color: Color(0xFFB3B3B3),
-                                                )),
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: 23),
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.pop(context);
-                                        },
-                                        child: Container(
-                                          width: 82,
-                                          height: 27,
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                width: 1.0,
-                                                color: Color(0xFF8291E6),
-                                              ),
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(5))),
-                                          child: Center(
-                                            child: Text(
-                                              "선택완료",
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontFamily: 'SpoqaHanSansNeo',
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xFF8291E6),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
+                              return WriteEmoDialog();
                             },
                           );
                         },
@@ -268,6 +152,215 @@ class TopContainer extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class WriteEmoDialog extends StatelessWidget {
+  const WriteEmoDialog({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Color.fromRGBO(0, 0, 0, 0.6),
+      alignment: Alignment.center,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 19),
+        padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            width: 1.0,
+            color: Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Wrap(
+          children: [
+            Column(
+              children: [
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Image.asset(
+                        "images/ic_cancel.png",
+                        width: 17,
+                        height: 18,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 11),
+                Text(
+                  "오늘은 어떤 기분이 드나요?",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'SpoqaHanSansNeo',
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF4A4A4A),
+                  ),
+                ),
+                SizedBox(height: 25),
+                EmoGridContainer(),
+                SizedBox(height: 37),
+                Card(
+                  elevation: 0,
+                  shadowColor: Colors.white,
+                  child: Container(
+                    height: 40,
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        width: 1.0,
+                        color: Color(0xFFB3B3B3),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: TextField(
+                      maxLength: 1,
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          counterText: '',
+                          hintText: '추가로 느끼는 감정을 작성해보세요',
+                          hintStyle: TextStyle(
+                            fontFamily: 'SpoqaHanSansNeo',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: Color(0xFFB3B3B3),
+                          )),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 23),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    width: 82,
+                    height: 27,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1.0,
+                          color: Color(0xFF8291E6),
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(5))),
+                    child: Center(
+                      child: Text(
+                        "선택완료",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'SpoqaHanSansNeo',
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF8291E6),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class EmoGridContainer extends StatelessWidget {
+  const EmoGridContainer({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 165,
+      child: GridView.count(
+        physics: NeverScrollableScrollPhysics(),
+        childAspectRatio: (13 / 15),
+        primary: false,
+        padding: EdgeInsets.symmetric(horizontal: 7),
+        crossAxisSpacing: 36,
+        mainAxisSpacing: 12,
+        crossAxisCount: 3,
+        children: <Widget>[
+          EmoGridItem(emoImage: "images/ic_emotion_calmness.png", emoNM: "평온"),
+          EmoGridItem(emoImage: "images/ic_emotion_dullness.png", emoNM: "무덤덤"),
+          EmoGridItem(emoImage: "images/ic_emotion_sadness.png", emoNM: "슬픔"),
+          EmoGridItem(emoImage: "images/ic_emotion_anger.png", emoNM: "분노"),
+          EmoGridItem(emoImage: "images/ic_emotion_satisfied.png", emoNM: "만족"),
+          EmoGridItem(
+              emoImage: "images/ic_emotion_emptiness.png", emoNM: "공허함"),
+        ],
+      ),
+    );
+  }
+}
+
+class EmoGridItem extends StatelessWidget {
+  const EmoGridItem({
+    super.key,
+    required this.emoImage,
+    required this.emoNM,
+  });
+  final String emoImage;
+  final String emoNM;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Container(
+            padding:
+                const EdgeInsets.only(top: 9, bottom: 5, left: 9, right: 9),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  emoImage,
+                  width: 40,
+                  height: 40,
+                ),
+                Text(
+                  emoNM,
+                  style: TextStyle(
+                    fontFamily: 'SpoqaHanSansNeo',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(130, 145, 230, 0.1),
+              border: Border.all(
+                width: 2,
+                color: Color(0xFF8291E6),
+              ),
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

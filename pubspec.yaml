@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^6.1.2
   fluttertoast: ^8.2.4
+  shared_preferences: ^2.2.2
+  week_of_year: ^2.2.0
 
 dev_dependencies:
   flutter_test:

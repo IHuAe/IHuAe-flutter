@@ -4,9 +4,23 @@ import 'package:flutter_ihuae/home/home_page.dart';
 import 'package:flutter_ihuae/calendar/calendar_page.dart';
 import 'package:flutter_ihuae/diary/diary_page.dart';
 import 'package:flutter_ihuae/chat/chat_page.dart';
+import 'package:flutter_ihuae/services/calendar_data_service.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+late SharedPreferences prefs;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CalendarDataService()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -52,7 +66,8 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     _statusBarHeight = MediaQuery.of(context).viewPadding.top;
-    return Builder(builder: (context) {
+    return Consumer<CalendarDataService>(
+        builder: (context, calendarDataService, child) {
       return Scaffold(
         body: Center(
           child: Padding(
