@@ -8,7 +8,43 @@ import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final List<Map> emoList = [
+  {
+    "emoNo": 0,
+    "emoIconImage": "images/emo_circle.png",
+    "emoName": "",
+  },
+  {
+    "emoNo": 1,
+    "emoIconImage": "images/ic_emotion_calmness.png",
+    "emoName": "평온"
+  },
+  {
+    "emoNo": 2,
+    "emoIconImage": "images/ic_emotion_dullness.png",
+    "emoName": "무덤덤"
+  },
+  {
+    "emoNo": 3,
+    "emoIconImage": "images/ic_emotion_sadness.png",
+    "emoName": "슬픔"
+  },
+  {"emoNo": 4, "emoIconImage": "images/ic_emotion_anger.png", "emoName": "분노"},
+  {
+    "emoNo": 5,
+    "emoIconImage": "images/ic_emotion_satisfied.png",
+    "emoName": "만족"
+  },
+  {
+    "emoNo": 6,
+    "emoIconImage": "images/ic_emotion_emptiness.png",
+    "emoName": "공허함"
+  },
+];
+
 late SharedPreferences prefs;
+//late int dDay;
+//late List<CalendarData> calendarDataList;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

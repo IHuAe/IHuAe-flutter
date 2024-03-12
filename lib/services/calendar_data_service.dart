@@ -1,118 +1,213 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:week_of_year/week_of_year.dart';
+import 'package:intl/intl.dart';
 
 import 'package:flutter_ihuae/main.dart';
-
-/**
-     * TABLE_NAME : tbCalendar 달력 테이블
-     * 1. DateID 날짜ID
-     * 2. CalendarYear 년
-     * 3. CalendarMonth 월
-     * 4. CalendarDay 일
-     */
 
 // CalendarData 데이터의 형식을 정해줍니다. 추후 isPinned, updatedAt 등의 정보도 저장할 수 있습니다.
 class CalendarData {
   CalendarData({
     required this.dateID,
-    required this.calendarYear,
-    required this.calendarMonth,
-    required this.calendarDay,
-    required this.calendarWeek,
-    required this.todayEmoIco,
+    required this.dateValue,
+    required this.todayEmo,
     required this.todayEmoContent,
+    required this.todayEmoIco,
+    required this.isEnabled,
   });
 
   int dateID;
-  int calendarYear;
-  int calendarMonth;
-  int calendarDay;
-  int calendarWeek;
-  String todayEmoIco;
-  String todayEmoContent;
+  DateTime dateValue;
+
+  int todayEmo =
+      0; /* 0 미선택,
+            1 calmness 평온, 
+            2 dullness 무덤덤, 
+            3 sadness 슬픔, 
+            4 anger 분노, 
+            5 satisfied 만족, 
+            6 emptiness 공허함 */
+  String todayEmoIco = "images/emo_circle.png";
+  String todayEmoContent = "";
+  bool isEnabled = false;
 
   Map toJson() {
     return {
       'dateID': dateID,
-      'calendarYear': calendarYear,
-      'calendarMonth': calendarMonth,
-      'calendarDay': calendarDay,
+      'dateValue': dateValue,
+      'todayEmo': todayEmo,
       'todayEmoIco': todayEmoIco,
       'todayEmoContent': todayEmoContent,
+      'isEnabled': isEnabled,
     };
   }
 
   factory CalendarData.fromJson(json) {
     return CalendarData(
       dateID: json['dateID'],
-      calendarYear: json['calendarYear'],
-      calendarMonth: json['calendarMonth'],
-      calendarDay: json['calendarDay'],
-      calendarWeek: json['calendarWeek'],
+      dateValue: DateTime.parse(json['dateValue']),
+      todayEmo: json['todayEmo'],
       todayEmoIco: json['todayEmoIco'],
       todayEmoContent: json['todayEmoContent'],
+      isEnabled: json['isEnabled'],
     );
   }
 }
 
 // CalendarData 데이터는 모두 여기서 관리
 class CalendarDataService extends ChangeNotifier {
+  List<CalendarData> calendarDataList = [];
+  int dDay = 0;
   CalendarDataService() {
     loadCalendarDataList();
   }
-  List<CalendarData> calendarDataList = [];
 
   createCalendarData() {
-    var date = DateTime.now();
+    DateTime newDate = DateTime.now();
+
+    //시간 0으로 초기화
+    DateTime date = newDate.subtract(Duration(
+        hours: newDate.hour,
+        minutes: newDate.minute,
+        seconds: newDate.second,
+        milliseconds: newDate.millisecond,
+        microseconds: newDate.microsecond));
+
+    //date = DateTime(date.year, date.month - 2, 1);  //Test
+    //시작일 저장
+    saveStartDate(date);
+    //시작한 달의 비활성화 날짜 가져오기
+    /*
+    if (date.day > 1) {
+      for (int j = date.day - 1; 0 < j; j--) {
+        DateTime calDate1 = date.subtract(Duration(days: j));
+        String sdfString1 = DateFormat('yyyyMMdd').format(calDate1).toString();
+        int id1 = int.parse(sdfString1);
+
+        CalendarData calendarData1 = CalendarData(
+          dateID: id1,
+          dateValue: calDate1,
+          todayEmoIco: 'images/emo_circle.png',
+          todayEmoContent: '',
+          isEnabled: false,
+        );
+        calendarDataList.add(calendarData1);
+      }
+    }*/
+    //시작부터 30일, 활성화 날짜 가져오기
     for (int i = 0; i < 30; i++) {
-      date.add(Duration(days: i));
+      DateTime calDate2 = date.add(Duration(days: i));
+      String sdfString2 = DateFormat('yyyyMMdd').format(calDate2).toString();
+      int id2 = int.parse(sdfString2);
 
-      int y = date.year;
-      //int m = date.month;
-      //int d = date.day;
-      //int w = date.weekOfYear;
-      //int id = int.parse('$y$m$d');
-      print('$y');
-      // CalendarData calendarData = CalendarData(
-      //     dateID: id,
-      //     calendarYear: y,
-      //     calendarMonth: m,
-      //     calendarDay: d,
-      //     calendarWeek: w,
-      //     todayEmoIco: 'images/emo_circle.png',
-      //     todayEmoContent: '');
-      // calendarDataList.add(calendarData);
+      CalendarData calendarData2 = CalendarData(
+        dateID: id2,
+        dateValue: calDate2,
+        todayEmo: 0,
+        todayEmoIco: 'images/emo_circle.png',
+        todayEmoContent: '',
+        isEnabled: true,
+      );
+      calendarDataList.add(calendarData2);
 
-      // saveCalendarDataList();
+      //마지막 달의 비활성화 날짜 가져오기
+      /*
+      if (i == 29) {
+        DateTime lastDate = DateTime(calDate2.year, calDate2.month + 1, 0);
+        if (calDate2.day != lastDate.day) {
+          for (int x = calDate2.day + 1; x < lastDate.day + 1; x++) {
+            DateTime calDate3 = DateTime(calDate2.year, calDate2.month, x);
+            String sdfString3 =
+                DateFormat('yyyyMMdd').format(calDate3).toString();
+            int id3 = int.parse(sdfString3);
+
+            CalendarData calendarData3 = CalendarData(
+              dateID: id3,
+              dateValue: calDate3,
+              todayEmoIco: 'images/emo_circle.png',
+              todayEmoContent: '',
+              isEnabled: false,
+            );
+            calendarDataList.add(calendarData3);
+          }
+        }
+      }*/
     }
+    saveCalendarDataList();
   }
 
+  //calendarDataList 로컬 저장
   saveCalendarDataList() {
     List calendarDataJsonList =
         calendarDataList.map((calendarData) => calendarData.toJson()).toList();
-    // [{"content": "1"}, {"content": "2"}]
 
-    String jsonString = jsonEncode(calendarDataJsonList);
-    // '[{"content": "1"}, {"content": "2"}]'
+    String jsonString = jsonEncode(calendarDataJsonList, toEncodable: myEncode);
 
     prefs.setString('calendarDataList', jsonString);
   }
 
+  //calendarDataList 불러오기 + 시작일 불러와 dDay계산하기
   loadCalendarDataList() {
     String? jsonString = prefs.getString('calendarDataList');
-    // '[{"content": "1"}, {"content": "2"}]'
 
     if (jsonString == null) {
+      dDay = 1;
       createCalendarData();
       return;
     } //null 이면 첫 접속이기 때문에 달력 데이터 신규 생성
-
+    dDay = calcularDDay(); //시작일과 오늘 날짜 차를 계산하여 dDay 가져오기
     List calendarDataJsonList = jsonDecode(jsonString);
-    // [{"content": "1"}, {"content": "2"}]
 
     calendarDataList = calendarDataJsonList
         .map((json) => CalendarData.fromJson(json))
         .toList();
+  }
+
+  //시작일 저장
+  saveStartDate(DateTime startDate) {
+    String jsonString = startDate.toString();
+    prefs.setString('startDate', jsonString);
+  }
+
+  //dDay 계산
+  int calcularDDay() {
+    String? jsonString = prefs.getString('startDate');
+    if (jsonString == null) {
+      return 1;
+    }
+    DateTime newDate = DateTime.now();
+    //시간 0으로 초기화
+    DateTime today = newDate.subtract(Duration(
+        hours: newDate.hour,
+        minutes: newDate.minute,
+        seconds: newDate.second,
+        milliseconds: newDate.millisecond,
+        microseconds: newDate.microsecond));
+    DateTime startDate = DateTime.parse(jsonString);
+
+    int difference = int.parse(startDate.difference(today).inDays.toString());
+
+    return difference + 1;
+  }
+
+  dynamic myEncode(dynamic item) {
+    if (item is DateTime) {
+      return item.toIso8601String();
+    }
+    return item;
+  }
+
+  updateTodayEmo(
+    int index,
+    int todayEmo,
+    String todayEmoIco,
+    String todayEmoContent,
+  ) {
+    CalendarData data = calendarDataList[index];
+    data.todayEmo = todayEmo;
+    data.todayEmoIco = todayEmoIco;
+    data.todayEmoContent = todayEmoContent;
+
+    notifyListeners();
+    saveCalendarDataList();
   }
 }

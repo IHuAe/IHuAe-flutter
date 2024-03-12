@@ -1,20 +1,31 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_ihuae/main.dart';
+import 'package:flutter_ihuae/services/calendar_data_service.dart';
+import 'package:provider/provider.dart';
 
 // 첫번째 페이지
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({
+    super.key,
+  });
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
   Widget build(BuildContext context) {
+    CalendarDataService calendarDataService =
+        context.read<CalendarDataService>();
     return Container(
       color: const Color(0xFFF6F8FD),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           //디데이, 하루문답 컨테이너
-          TopContainer(),
+          TopContainer(calendarDataService: calendarDataService),
           //이미지 카드
           Expanded(
             child: Padding(
@@ -28,13 +39,25 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class TopContainer extends StatelessWidget {
+class TopContainer extends StatefulWidget {
   const TopContainer({
     super.key,
+    required this.calendarDataService,
   });
 
+  final CalendarDataService calendarDataService;
+
+  @override
+  State<TopContainer> createState() => _TopContainerState();
+}
+
+class _TopContainerState extends State<TopContainer> {
   @override
   Widget build(BuildContext context) {
+    int dDay = widget.calendarDataService.dDay;
+    List<CalendarData> calendarDataList =
+        widget.calendarDataService.calendarDataList;
+    int todayEmoNum = calendarDataList[dDay - 1].todayEmo;
     return Container(
       height: 169,
       decoration: BoxDecoration(
@@ -58,7 +81,7 @@ class TopContainer extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  "D-Day", //TODO 디데이 카운트
+                  "D-$dDay",
                   style: TextStyle(
                     fontFamily: 'SpoqaHanSansNeo',
                     fontWeight: FontWeight.w700,
@@ -68,7 +91,9 @@ class TopContainer extends StatelessWidget {
                 ),
                 Expanded(
                   child: Text(
-                    "오늘의 기분을 표현해보세요",
+                    todayEmoNum == 0
+                        ? "오늘의 기분을 표현해보세요"
+                        : emoList[todayEmoNum]['emoName'],
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontFamily: 'SpoqaHanSansNeo',
@@ -80,7 +105,7 @@ class TopContainer extends StatelessWidget {
                 ),
                 SizedBox(width: 15),
                 Image.asset(
-                  'images/emo_circle.png', //TODO 유저가 설정한 기분 아이콘 설정
+                  calendarDataList[dDay - 1].todayEmoIco,
                   width: 27,
                   height: 27,
                 ),
@@ -104,7 +129,7 @@ class TopContainer extends StatelessWidget {
                     children: [
                       const Expanded(
                         child: Text(
-                          "오늘의 기분을 기록해보세요.", //TODO 질문내용 데이터 연동
+                          "오늘의 기분을 기록해보세요.",
                           style: TextStyle(
                             fontFamily: 'SpoqaHanSansNeo',
                             fontWeight: FontWeight.w500,
@@ -115,12 +140,12 @@ class TopContainer extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          //TODO 기록하기 눌렀을 때, 기록 다이얼로그 팝업
-                          //Fluttertoast.showToast(msg: "toast test");
                           showDialog(
                             context: context,
                             builder: (dialogContext) {
-                              return WriteEmoDialog();
+                              return WriteEmoDialog(
+                                calendarDataService: widget.calendarDataService,
+                              );
                             },
                           );
                         },
@@ -156,10 +181,31 @@ class TopContainer extends StatelessWidget {
   }
 }
 
-class WriteEmoDialog extends StatelessWidget {
+class WriteEmoDialog extends StatefulWidget {
   const WriteEmoDialog({
     super.key,
+    required this.calendarDataService,
   });
+
+  final CalendarDataService calendarDataService;
+
+  @override
+  State<WriteEmoDialog> createState() => _WriteEmoDialogState();
+}
+
+class _WriteEmoDialogState extends State<WriteEmoDialog> {
+  int index = 0;
+  late CalendarData calendarData;
+  int _todayEmo = 0;
+  String _todayEmoContent = "";
+  @override
+  void initState() {
+    int index = widget.calendarDataService.dDay - 1;
+    calendarData = widget.calendarDataService.calendarDataList[index];
+    _todayEmo = calendarData.todayEmo;
+    _todayEmoContent = calendarData.todayEmoContent;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +254,10 @@ class WriteEmoDialog extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 25),
-                EmoGridContainer(),
+                EmoGridContainer(
+                  todayEmo: _todayEmo,
+                  clickEmoGridItem: _clickEmoGridItem,
+                ),
                 SizedBox(height: 37),
                 Card(
                   elevation: 0,
@@ -225,8 +274,12 @@ class WriteEmoDialog extends StatelessWidget {
                       ),
                       borderRadius: BorderRadius.all(Radius.circular(10)),
                     ),
-                    child: TextField(
-                      maxLength: 1,
+                    child: TextFormField(
+                      initialValue: _todayEmoContent,
+                      onChanged: (value) {
+                        _todayEmoContent = value;
+                      },
+                      maxLength: 100,
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           focusedBorder: InputBorder.none,
@@ -244,6 +297,8 @@ class WriteEmoDialog extends StatelessWidget {
                 SizedBox(height: 23),
                 GestureDetector(
                   onTap: () {
+                    widget.calendarDataService.updateTodayEmo(index, _todayEmo,
+                        emoList[_todayEmo]['emoIconImage'], _todayEmoContent);
                     Navigator.pop(context);
                   },
                   child: Container(
@@ -276,15 +331,31 @@ class WriteEmoDialog extends StatelessWidget {
       ),
     );
   }
+
+  void _clickEmoGridItem(int pos) {
+    setState(() {
+      _todayEmo = pos;
+    });
+  }
 }
 
-class EmoGridContainer extends StatelessWidget {
+class EmoGridContainer extends StatefulWidget {
   const EmoGridContainer({
     super.key,
+    required this.todayEmo,
+    required this.clickEmoGridItem,
   });
+  final int todayEmo;
+  final void Function(int) clickEmoGridItem;
 
   @override
+  State<EmoGridContainer> createState() => _EmoGridContainerState();
+}
+
+class _EmoGridContainerState extends State<EmoGridContainer> {
+  @override
   Widget build(BuildContext context) {
+    //int selectedEmo = widget.todayEmo;
     return SizedBox(
       height: 165,
       child: GridView.count(
@@ -296,13 +367,36 @@ class EmoGridContainer extends StatelessWidget {
         mainAxisSpacing: 12,
         crossAxisCount: 3,
         children: <Widget>[
-          EmoGridItem(emoImage: "images/ic_emotion_calmness.png", emoNM: "평온"),
-          EmoGridItem(emoImage: "images/ic_emotion_dullness.png", emoNM: "무덤덤"),
-          EmoGridItem(emoImage: "images/ic_emotion_sadness.png", emoNM: "슬픔"),
-          EmoGridItem(emoImage: "images/ic_emotion_anger.png", emoNM: "분노"),
-          EmoGridItem(emoImage: "images/ic_emotion_satisfied.png", emoNM: "만족"),
           EmoGridItem(
-              emoImage: "images/ic_emotion_emptiness.png", emoNM: "공허함"),
+            emoNo: 1,
+            selectedEmo: widget.todayEmo,
+            clickEmoGridItem: widget.clickEmoGridItem,
+          ),
+          EmoGridItem(
+            emoNo: 2,
+            selectedEmo: widget.todayEmo,
+            clickEmoGridItem: widget.clickEmoGridItem,
+          ),
+          EmoGridItem(
+            emoNo: 3,
+            selectedEmo: widget.todayEmo,
+            clickEmoGridItem: widget.clickEmoGridItem,
+          ),
+          EmoGridItem(
+            emoNo: 4,
+            selectedEmo: widget.todayEmo,
+            clickEmoGridItem: widget.clickEmoGridItem,
+          ),
+          EmoGridItem(
+            emoNo: 5,
+            selectedEmo: widget.todayEmo,
+            clickEmoGridItem: widget.clickEmoGridItem,
+          ),
+          EmoGridItem(
+            emoNo: 6,
+            selectedEmo: widget.todayEmo,
+            clickEmoGridItem: widget.clickEmoGridItem,
+          ),
         ],
       ),
     );
@@ -312,55 +406,64 @@ class EmoGridContainer extends StatelessWidget {
 class EmoGridItem extends StatelessWidget {
   const EmoGridItem({
     super.key,
-    required this.emoImage,
-    required this.emoNM,
+    required this.emoNo,
+    required this.selectedEmo,
+    required this.clickEmoGridItem,
   });
-  final String emoImage;
-  final String emoNM;
+
+  final int emoNo;
+  final int selectedEmo;
+  final void Function(int) clickEmoGridItem;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Container(
-            padding:
-                const EdgeInsets.only(top: 9, bottom: 5, left: 9, right: 9),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(
-                  emoImage,
-                  width: 40,
-                  height: 40,
-                ),
-                Text(
-                  emoNM,
-                  style: TextStyle(
-                    fontFamily: 'SpoqaHanSansNeo',
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.black,
+    return GestureDetector(
+      onTap: () {
+        clickEmoGridItem(emoNo);
+      },
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              padding:
+                  const EdgeInsets.only(top: 9, bottom: 5, left: 9, right: 9),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    emoList[emoNo]['emoIconImage'], //emoImage,
+                    width: 40,
+                    height: 40,
                   ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color.fromRGBO(130, 145, 230, 0.1),
-              border: Border.all(
-                width: 2,
-                color: Color(0xFF8291E6),
+                  Text(
+                    emoList[emoNo]['emoName'],
+                    style: TextStyle(
+                      fontFamily: 'SpoqaHanSansNeo',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
-              borderRadius: BorderRadius.circular(5),
             ),
           ),
-        ),
-      ],
+          if (selectedEmo == emoNo)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(130, 145, 230, 0.1),
+                  border: Border.all(
+                    width: 2,
+                    color: Color(0xFF8291E6),
+                  ),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
