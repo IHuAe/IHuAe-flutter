@@ -55,6 +55,7 @@ class CalendarData {
 
 // CalendarData 데이터는 모두 여기서 관리
 class CalendarDataService extends ChangeNotifier {
+  final int maxDayCnt = 30;
   List<CalendarData> calendarDataList = [];
   int dDay = 0;
   CalendarDataService() {
@@ -94,7 +95,7 @@ class CalendarDataService extends ChangeNotifier {
       }
     }*/
     //시작부터 30일, 활성화 날짜 가져오기
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < maxDayCnt; i++) {
       DateTime calDate2 = date.add(Duration(days: i));
       String sdfString2 = DateFormat('yyyyMMdd').format(calDate2).toString();
       int id2 = int.parse(sdfString2);
@@ -111,7 +112,7 @@ class CalendarDataService extends ChangeNotifier {
 
       //마지막 달의 비활성화 날짜 가져오기
       /*
-      if (i == 29) {
+      if (i == MAX_DAY_COUNT-1) {
         DateTime lastDate = DateTime(calDate2.year, calDate2.month + 1, 0);
         if (calDate2.day != lastDate.day) {
           for (int x = calDate2.day + 1; x < lastDate.day + 1; x++) {
@@ -150,7 +151,7 @@ class CalendarDataService extends ChangeNotifier {
     String? jsonString = prefs.getString('calendarDataList');
 
     if (jsonString == null) {
-      dDay = 1;
+      dDay = 0;
       createCalendarData();
       return;
     } //null 이면 첫 접속이기 때문에 달력 데이터 신규 생성
@@ -170,9 +171,10 @@ class CalendarDataService extends ChangeNotifier {
 
   //dDay 계산
   int calcularDDay() {
+    int difference = 0;
     String? jsonString = prefs.getString('startDate');
     if (jsonString == null) {
-      return 1;
+      return difference;
     }
     DateTime newDate = DateTime.now();
     //시간 0으로 초기화
@@ -184,9 +186,11 @@ class CalendarDataService extends ChangeNotifier {
         microseconds: newDate.microsecond));
     DateTime startDate = DateTime.parse(jsonString);
 
-    int difference = int.parse(startDate.difference(today).inDays.toString());
+    difference = int.parse(today.difference(startDate).inDays.toString());
 
-    return difference + 1;
+    if (difference >= maxDayCnt) difference = maxDayCnt - 1;
+
+    return difference;
   }
 
   dynamic myEncode(dynamic item) {

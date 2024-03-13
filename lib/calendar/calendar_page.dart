@@ -1,7 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
+
+import 'package:flutter_ihuae/main.dart';
+import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/title_bar.dart';
+import 'package:week_of_year/date_week_extensions.dart';
 
 // 두번째 페이지
 class CalendarPage extends StatelessWidget {
@@ -11,65 +14,23 @@ class CalendarPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Size _displaySize = MediaQuery.of(context).size;
     double _displaySizeWidth = _displaySize.width;
-    //double _displaySizeHeight = _displaySize.height;
 
     double _calendarPadding = 36;
     double _itemWidth = (_displaySizeWidth - _calendarPadding * 2) / 7;
 
-    return Container(
-      color: Color(0xFFF6F8Fd),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            margin: EdgeInsets.only(bottom: 28),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(23),
-                bottomRight: Radius.circular(23),
-              ),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 4,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                TitleBar(title: "캘린더"),
-                SizedBox(height: 20),
-                CalendarHandler(calendarPadding: _calendarPadding),
-                SizedBox(height: 37),
-                WeekHeaderContainer(
-                    calendarPadding: _calendarPadding, itemWidth: _itemWidth),
-                SizedBox(height: 19),
-                CalendarContainer(itemWidth: _itemWidth),
-                SizedBox(height: 19),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 24, bottom: 16),
-            child: Text(
-              '오늘의 기분',
-              style: TextStyle(
-                fontFamily: 'SpoqaHanSansNeo',
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF4A4A4A),
-                fontSize: 14,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 27, left: 20, right: 20),
-              padding: EdgeInsets.only(top: 25, bottom: 0, left: 25, right: 25),
+    return Consumer<CalendarDataService>(
+        builder: (context, calendarDataService, child) {
+      return Container(
+        color: Color(0xFFF6F8Fd),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(8)),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(23),
+                  bottomRight: Radius.circular(23),
+                ),
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
@@ -82,14 +43,110 @@ class CalendarPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Image.asset("images/ic_emotion_calmness.png"),
-                      SizedBox(
-                        width: 18,
-                      ),
-                      Text(
-                        "data",
+                  TitleBar(title: "캘린더"),
+                  SizedBox(height: 20),
+                  CalendarHandler(calendarPadding: _calendarPadding),
+                  SizedBox(height: 37),
+                  WeekHeaderContainer(
+                      calendarPadding: _calendarPadding, itemWidth: _itemWidth),
+                  SizedBox(height: 19),
+                  CalendarContainer(
+                      calendarDataService: calendarDataService,
+                      itemWidth: _itemWidth),
+                  SizedBox(height: 19),
+                ],
+              ),
+            ),
+            Expanded(
+              child:
+                  TodayEmoContainer(calendarDataService: calendarDataService),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+}
+
+class TodayEmoContainer extends StatelessWidget {
+  const TodayEmoContainer({
+    super.key,
+    required this.calendarDataService,
+  });
+
+  final CalendarDataService calendarDataService;
+
+  @override
+  Widget build(BuildContext context) {
+    int todayEmoId =
+        calendarDataService.calendarDataList[calendarDataService.dDay].todayEmo;
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Column(
+            children: [
+              Container(
+                margin: EdgeInsets.only(left: 24, top: 28, bottom: 16),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '오늘의 기분',
+                  style: TextStyle(
+                    fontFamily: 'SpoqaHanSansNeo',
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF4A4A4A),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+              Container(
+                height: 158,
+                margin: EdgeInsets.only(bottom: 27, left: 20, right: 20),
+                padding:
+                    EdgeInsets.only(top: 25, bottom: 0, left: 25, right: 25),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(8)),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          emoList[todayEmoId]['emoIconImage'],
+                        ),
+                        SizedBox(
+                          width: 18,
+                        ),
+                        Text(
+                          emoList[todayEmoId]['emoDescription'],
+                          style: TextStyle(
+                            fontFamily: "SpoqaHanSansNeo",
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: Color(0xFF4A4A4A),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 19),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        calendarDataService
+                            .calendarDataList[calendarDataService.dDay]
+                            .todayEmoContent,
+                        //"sldfskflsdkjfsl;dfjdsklfjsd;lkfjs;lkfjsl;fkjsd;lkfjsd;lkfjsl;kjfd;",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+
                         style: TextStyle(
                           fontFamily: "SpoqaHanSansNeo",
                           fontWeight: FontWeight.w400,
@@ -97,28 +154,14 @@ class CalendarPage extends StatelessWidget {
                           color: Color(0xFF4A4A4A),
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 19),
-                  Expanded(
-                    child: Text(
-                      "sldfskflsdkjfsl;dfjdsklfjsd;lkfjs;lkfjsl;fkjsd;lkfjsd;lkfjsl;kjfd;lskfj",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: "SpoqaHanSansNeo",
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Color(0xFF4A4A4A),
-                      ),
-                    ),
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -179,7 +222,6 @@ class WeekHeaderContainer extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: _calendarPadding),
       child: Row(
-        //mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           WeekHeaderText(weekText: "일", widthSize: _itemWidth),
           WeekHeaderText(weekText: "월", widthSize: _itemWidth),
@@ -194,13 +236,48 @@ class WeekHeaderContainer extends StatelessWidget {
   }
 }
 
-class CalendarContainer extends StatelessWidget {
+class CalendarContainer extends StatefulWidget {
   const CalendarContainer({
     super.key,
     required double itemWidth,
+    required this.calendarDataService,
   }) : _itemWidth = itemWidth;
 
   final double _itemWidth;
+  final CalendarDataService calendarDataService;
+
+  @override
+  State<CalendarContainer> createState() => _CalendarContainerState();
+}
+
+class _CalendarContainerState extends State<CalendarContainer> {
+  late List<CalendarData> calendarDataList;
+  late List<dynamic> testList = [
+    [0]
+  ];
+
+  @override
+  void initState() {
+    calendarDataList = widget.calendarDataService.calendarDataList;
+    //testList = [];
+    int weekOfYearIndex = -1;
+    int cnt1 = 0;
+    int cnt2 = 0;
+    for (CalendarData c in calendarDataList) {
+      int wOfy = c.dateValue.weekOfYear;
+      if (weekOfYearIndex < 0) weekOfYearIndex = wOfy;
+      if (weekOfYearIndex != wOfy) {
+        weekOfYearIndex = wOfy;
+        cnt1++;
+        cnt2 = 0;
+      }
+      testList[cnt1][cnt2] = c;
+      cnt2++;
+    }
+
+    print(testList.toString());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +300,7 @@ class CalendarContainer extends StatelessWidget {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: ((innerContext, innerIndex) {
                       return CalendarItem(
-                        itemWidth: (_itemWidth),
+                        itemWidth: (widget._itemWidth),
                         itemHeight: 58,
                       );
                     })),

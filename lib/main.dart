@@ -12,33 +12,44 @@ final List<Map> emoList = [
   {
     "emoNo": 0,
     "emoIconImage": "images/emo_circle.png",
-    "emoName": "",
+    "emoName": "오늘의 기분을 표현해보세요",
+    "emoDescription": "오늘은 어떤 기분이 드나요?",
   },
   {
     "emoNo": 1,
     "emoIconImage": "images/ic_emotion_calmness.png",
-    "emoName": "평온"
+    "emoName": "평온",
+    "emoDescription": "오늘은 평온함",
   },
   {
     "emoNo": 2,
     "emoIconImage": "images/ic_emotion_dullness.png",
-    "emoName": "무덤덤"
+    "emoName": "무덤덤",
+    "emoDescription": "오늘은 무덤덤함",
   },
   {
     "emoNo": 3,
     "emoIconImage": "images/ic_emotion_sadness.png",
-    "emoName": "슬픔"
+    "emoName": "슬픔",
+    "emoDescription": "오늘은 슬픔",
   },
-  {"emoNo": 4, "emoIconImage": "images/ic_emotion_anger.png", "emoName": "분노"},
+  {
+    "emoNo": 4,
+    "emoIconImage": "images/ic_emotion_anger.png",
+    "emoName": "분노",
+    "emoDescription": "오늘은 화남",
+  },
   {
     "emoNo": 5,
     "emoIconImage": "images/ic_emotion_satisfied.png",
-    "emoName": "만족"
+    "emoName": "만족",
+    "emoDescription": "오늘은 만족스러움",
   },
   {
     "emoNo": 6,
     "emoIconImage": "images/ic_emotion_emptiness.png",
-    "emoName": "공허함"
+    "emoName": "공허함",
+    "emoDescription": "오늘은 공허함",
   },
 ];
 

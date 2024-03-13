@@ -5,37 +5,33 @@ import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:provider/provider.dart';
 
 // 첫번째 페이지
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({
     super.key,
   });
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
   Widget build(BuildContext context) {
-    CalendarDataService calendarDataService =
-        context.read<CalendarDataService>();
-    return Container(
-      color: const Color(0xFFF6F8FD),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          //디데이, 하루문답 컨테이너
-          TopContainer(calendarDataService: calendarDataService),
-          //이미지 카드
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 24.0, bottom: 27.0),
-              child: ViewPager(),
+    return Consumer<CalendarDataService>(
+        builder: (context, calendarDataService, child) {
+      return Container(
+        color: const Color(0xFFF6F8FD),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            //디데이, 하루문답 컨테이너
+            TopContainer(calendarDataService: calendarDataService),
+            //이미지 카드
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 24.0, bottom: 27.0),
+                child: ViewPager(),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -57,7 +53,7 @@ class _TopContainerState extends State<TopContainer> {
     int dDay = widget.calendarDataService.dDay;
     List<CalendarData> calendarDataList =
         widget.calendarDataService.calendarDataList;
-    int todayEmoNum = calendarDataList[dDay - 1].todayEmo;
+    int todayEmoNum = calendarDataList[dDay].todayEmo;
     return Container(
       height: 169,
       decoration: BoxDecoration(
@@ -81,7 +77,7 @@ class _TopContainerState extends State<TopContainer> {
             Row(
               children: [
                 Text(
-                  "D-$dDay",
+                  "D+${dDay + 1}",
                   style: TextStyle(
                     fontFamily: 'SpoqaHanSansNeo',
                     fontWeight: FontWeight.w700,
@@ -91,9 +87,10 @@ class _TopContainerState extends State<TopContainer> {
                 ),
                 Expanded(
                   child: Text(
-                    todayEmoNum == 0
-                        ? "오늘의 기분을 표현해보세요"
-                        : emoList[todayEmoNum]['emoName'],
+                    emoList[todayEmoNum]['emoName'],
+                    // todayEmoNum == 0
+                    //     ? "오늘의 기분을 표현해보세요"
+                    //     : emoList[todayEmoNum]['emoName'],
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontFamily: 'SpoqaHanSansNeo',
@@ -105,7 +102,7 @@ class _TopContainerState extends State<TopContainer> {
                 ),
                 SizedBox(width: 15),
                 Image.asset(
-                  calendarDataList[dDay - 1].todayEmoIco,
+                  calendarDataList[dDay].todayEmoIco,
                   width: 27,
                   height: 27,
                 ),
@@ -200,7 +197,7 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
   String _todayEmoContent = "";
   @override
   void initState() {
-    int index = widget.calendarDataService.dDay - 1;
+    int index = widget.calendarDataService.dDay;
     calendarData = widget.calendarDataService.calendarDataList[index];
     _todayEmo = calendarData.todayEmo;
     _todayEmoContent = calendarData.todayEmoContent;
@@ -299,6 +296,8 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
                   onTap: () {
                     widget.calendarDataService.updateTodayEmo(index, _todayEmo,
                         emoList[_todayEmo]['emoIconImage'], _todayEmoContent);
+                    print(
+                        '==============${CalendarDataService().calendarDataList[index].todayEmo}==============================');
                     Navigator.pop(context);
                   },
                   child: Container(
