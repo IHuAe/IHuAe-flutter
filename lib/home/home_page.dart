@@ -54,6 +54,7 @@ class _TopContainerState extends State<TopContainer> {
     List<CalendarData> calendarDataList =
         widget.calendarDataService.calendarDataList;
     int todayEmoNum = calendarDataList[dDay].todayEmo;
+
     return Container(
       height: 169,
       decoration: BoxDecoration(
@@ -102,7 +103,7 @@ class _TopContainerState extends State<TopContainer> {
                 ),
                 SizedBox(width: 15),
                 Image.asset(
-                  calendarDataList[dDay].todayEmoIco,
+                  emoList[todayEmoNum]['emoIconImage'],
                   width: 27,
                   height: 27,
                 ),
@@ -197,7 +198,7 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
   String _todayEmoContent = "";
   @override
   void initState() {
-    int index = widget.calendarDataService.dDay;
+    index = widget.calendarDataService.dDay;
     calendarData = widget.calendarDataService.calendarDataList[index];
     _todayEmo = calendarData.todayEmo;
     _todayEmoContent = calendarData.todayEmoContent;
@@ -294,10 +295,8 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
                 SizedBox(height: 23),
                 GestureDetector(
                   onTap: () {
-                    widget.calendarDataService.updateTodayEmo(index, _todayEmo,
-                        emoList[_todayEmo]['emoIconImage'], _todayEmoContent);
-                    print(
-                        '==============${CalendarDataService().calendarDataList[index].todayEmo}==============================');
+                    widget.calendarDataService
+                        .updateTodayEmo(index, _todayEmo, _todayEmoContent);
                     Navigator.pop(context);
                   },
                   child: Container(

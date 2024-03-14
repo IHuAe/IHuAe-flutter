@@ -11,7 +11,6 @@ class CalendarData {
     required this.dateValue,
     required this.todayEmo,
     required this.todayEmoContent,
-    required this.todayEmoIco,
     required this.isEnabled,
   });
 
@@ -26,7 +25,6 @@ class CalendarData {
             4 anger 분노, 
             5 satisfied 만족, 
             6 emptiness 공허함 */
-  String todayEmoIco = "images/emo_circle.png";
   String todayEmoContent = "";
   bool isEnabled = false;
 
@@ -35,7 +33,6 @@ class CalendarData {
       'dateID': dateID,
       'dateValue': dateValue,
       'todayEmo': todayEmo,
-      'todayEmoIco': todayEmoIco,
       'todayEmoContent': todayEmoContent,
       'isEnabled': isEnabled,
     };
@@ -46,7 +43,6 @@ class CalendarData {
       dateID: json['dateID'],
       dateValue: DateTime.parse(json['dateValue']),
       todayEmo: json['todayEmo'],
-      todayEmoIco: json['todayEmoIco'],
       todayEmoContent: json['todayEmoContent'],
       isEnabled: json['isEnabled'],
     );
@@ -104,7 +100,6 @@ class CalendarDataService extends ChangeNotifier {
         dateID: id2,
         dateValue: calDate2,
         todayEmo: 0,
-        todayEmoIco: 'images/emo_circle.png',
         todayEmoContent: '',
         isEnabled: true,
       );
@@ -203,12 +198,10 @@ class CalendarDataService extends ChangeNotifier {
   updateTodayEmo(
     int index,
     int todayEmo,
-    String todayEmoIco,
     String todayEmoContent,
   ) {
     CalendarData data = calendarDataList[index];
     data.todayEmo = todayEmo;
-    data.todayEmoIco = todayEmoIco;
     data.todayEmoContent = todayEmoContent;
 
     notifyListeners();

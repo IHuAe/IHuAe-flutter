@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ihuae/main.dart';
@@ -7,8 +10,33 @@ import 'package:flutter_ihuae/title_bar.dart';
 import 'package:week_of_year/date_week_extensions.dart';
 
 // 두번째 페이지
-class CalendarPage extends StatelessWidget {
+class CalendarPage extends StatefulWidget {
   const CalendarPage({Key? key}) : super(key: key);
+
+  @override
+  State<CalendarPage> createState() => _CalendarPageState();
+}
+
+class _CalendarPageState extends State<CalendarPage> {
+  //TODO 옮기기
+  List<CalendarData> calendarDataList = [];
+  Map calendarDataMap = HashMap();
+  List<int> monthList = [];
+  int _currentPageIndex = 0;
+  late PageController _viewPagerController;
+
+  @override
+  void initState() {
+    _viewPagerController = PageController();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _viewPagerController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,52 +47,159 @@ class CalendarPage extends StatelessWidget {
     double _itemWidth = (_displaySizeWidth - _calendarPadding * 2) / 7;
 
     return Consumer<CalendarDataService>(
-        builder: (context, calendarDataService, child) {
-      return Container(
-        color: Color(0xFFF6F8Fd),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(23),
-                  bottomRight: Radius.circular(23),
-                ),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                    offset: Offset(0, 4),
+      builder: (context, calendarDataService, child) {
+        setCalendarDataList(calendarDataService);
+        setCalendarDataMap();
+        return Container(
+          color: Color(0xFFF6F8Fd),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(23),
+                    bottomRight: Radius.circular(23),
                   ),
-                ],
-              ),
-              child: Column(
-                children: [
-                  TitleBar(title: "캘린더"),
-                  SizedBox(height: 20),
-                  CalendarHandler(calendarPadding: _calendarPadding),
-                  SizedBox(height: 37),
-                  WeekHeaderContainer(
-                      calendarPadding: _calendarPadding, itemWidth: _itemWidth),
-                  SizedBox(height: 19),
-                  CalendarContainer(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    TitleBar(title: "캘린더"),
+                    SizedBox(height: 20),
+                    CalendarHandler(calendarPadding: _calendarPadding),
+                    SizedBox(height: 37),
+                    WeekHeaderContainer(
+                        calendarPadding: _calendarPadding,
+                        itemWidth: _itemWidth),
+                    SizedBox(height: 19),
+                    CalendarContainer(
                       calendarDataService: calendarDataService,
-                      itemWidth: _itemWidth),
-                  SizedBox(height: 19),
-                ],
+                      itemWidth: _itemWidth,
+                      calendarDataList: calendarDataList,
+                      calendarDataMap: calendarDataMap,
+                      monthList: monthList,
+                      currentPageIndex: _currentPageIndex,
+                      viewPagerController: _viewPagerController,
+                      handleViewPagerChanged: _handleViewPagerChanged,
+                    ),
+                    SizedBox(height: 19),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child:
-                  TodayEmoContainer(calendarDataService: calendarDataService),
-            ),
-          ],
-        ),
-      );
+              Expanded(
+                child:
+                    TodayEmoContainer(calendarDataService: calendarDataService),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void setCalendarDataList(CalendarDataService cs) {
+    //시작한 달의 비활성화 날짜 가져오기
+    CalendarData firstData = cs.calendarDataList[0];
+    DateTime fistDate = firstData.dateValue;
+
+    if (fistDate.day > 1) {
+      for (int j = fistDate.day - 1; 0 < j; j--) {
+        DateTime calDate1 = fistDate.subtract(Duration(days: j));
+        String sdfString1 = DateFormat('yyyyMMdd').format(calDate1).toString();
+        int id1 = int.parse(sdfString1);
+
+        CalendarData calendarData1 = CalendarData(
+          dateID: id1,
+          dateValue: calDate1,
+          todayEmoContent: '',
+          isEnabled: false,
+          todayEmo: 0,
+        );
+        calendarDataList.add(calendarData1);
+      }
+    }
+
+    calendarDataList.addAll(cs.calendarDataList);
+
+    //마지막 달의 비활성화 날짜 가져오기
+    CalendarData lastEnableData = calendarDataList[calendarDataList.length - 1];
+    DateTime lastEnableDate = lastEnableData.dateValue;
+    DateTime lastDate =
+        DateTime(lastEnableDate.year, lastEnableDate.month + 1, 0);
+    if (lastEnableDate.day != lastDate.day) {
+      for (int x = lastEnableDate.day + 1; x < lastDate.day + 1; x++) {
+        DateTime calDate3 =
+            DateTime(lastEnableDate.year, lastEnableDate.month, x);
+        String sdfString3 = DateFormat('yyyyMMdd').format(calDate3).toString();
+        int id3 = int.parse(sdfString3);
+
+        CalendarData calendarData3 = CalendarData(
+          dateID: id3,
+          dateValue: calDate3,
+          todayEmoContent: '',
+          isEnabled: false,
+          todayEmo: 0,
+        );
+        calendarDataList.add(calendarData3);
+      }
+    }
+  }
+
+  void setCalendarDataMap() {
+    int weekOfYearIndex = -1;
+    int cnt1 = -1;
+    int monthKey = 0;
+    calendarDataMap.clear();
+    for (CalendarData c in calendarDataList) {
+      if (monthKey != c.dateValue.month) {
+        weekOfYearIndex = -1;
+        cnt1 = -1;
+        monthKey = c.dateValue.month;
+        monthList.add(monthKey);
+      }
+
+      Map weekDataHash = calendarDataMap[monthKey] ?? HashMap();
+
+      int wOfy = c.dateValue.weekOfYear;
+
+      if (weekOfYearIndex != wOfy) {
+        weekOfYearIndex = wOfy;
+        cnt1++;
+      }
+      List<CalendarData> week = weekDataHash[cnt1] ?? [];
+      week.add(c);
+      weekDataHash[cnt1] = week;
+
+      calendarDataMap[monthKey] = weekDataHash;
+    }
+
+    print(
+        "======calendarDataMap : ${calendarDataMap.toString()}===================");
+  }
+
+  void _handleViewPagerChanged(int currentPageIndex) {
+    setState(() {
+      print("======call _handleViewPagerChanged $currentPageIndex=======");
+      _currentPageIndex = currentPageIndex;
     });
+  }
+
+  void _updateCurrentPageIndex(int index) {
+    print("======call _updateCurrentPageIndex======= $index");
+    _viewPagerController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+    );
   }
 }
 
@@ -223,13 +358,13 @@ class WeekHeaderContainer extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: _calendarPadding),
       child: Row(
         children: [
-          WeekHeaderText(weekText: "일", widthSize: _itemWidth),
           WeekHeaderText(weekText: "월", widthSize: _itemWidth),
           WeekHeaderText(weekText: "화", widthSize: _itemWidth),
           WeekHeaderText(weekText: "수", widthSize: _itemWidth),
           WeekHeaderText(weekText: "목", widthSize: _itemWidth),
           WeekHeaderText(weekText: "금", widthSize: _itemWidth),
           WeekHeaderText(weekText: "토", widthSize: _itemWidth),
+          WeekHeaderText(weekText: "일", widthSize: _itemWidth),
         ],
       ),
     );
@@ -239,76 +374,91 @@ class WeekHeaderContainer extends StatelessWidget {
 class CalendarContainer extends StatefulWidget {
   const CalendarContainer({
     super.key,
-    required double itemWidth,
+    required this.itemWidth,
     required this.calendarDataService,
-  }) : _itemWidth = itemWidth;
+    required this.calendarDataList,
+    required this.calendarDataMap,
+    required this.monthList,
+    required this.currentPageIndex,
+    required this.viewPagerController,
+    required this.handleViewPagerChanged,
+  });
 
-  final double _itemWidth;
+  final double itemWidth;
   final CalendarDataService calendarDataService;
+
+  final List<CalendarData> calendarDataList;
+  final Map calendarDataMap;
+  final List<int> monthList;
+  final int currentPageIndex;
+  final PageController viewPagerController;
+  final void Function(int) handleViewPagerChanged;
 
   @override
   State<CalendarContainer> createState() => _CalendarContainerState();
 }
 
 class _CalendarContainerState extends State<CalendarContainer> {
-  late List<CalendarData> calendarDataList;
-  late List<dynamic> testList = [
-    [0]
-  ];
+  // List<CalendarData> calendarDataList = [];
+  // Map calendarDataMap = HashMap();
+  // List<int> monthList = [];
+  // int _currentPageIndex = 0;
+  // late PageController _viewPagerController;
 
-  @override
-  void initState() {
-    calendarDataList = widget.calendarDataService.calendarDataList;
-    //testList = [];
-    int weekOfYearIndex = -1;
-    int cnt1 = 0;
-    int cnt2 = 0;
-    for (CalendarData c in calendarDataList) {
-      int wOfy = c.dateValue.weekOfYear;
-      if (weekOfYearIndex < 0) weekOfYearIndex = wOfy;
-      if (weekOfYearIndex != wOfy) {
-        weekOfYearIndex = wOfy;
-        cnt1++;
-        cnt2 = 0;
-      }
-      testList[cnt1][cnt2] = c;
-      cnt2++;
-    }
+  // @override
+  // void initState() {
+  //   setCalendarDataList();
+  //   setCalendarDataMap();
+  //   _viewPagerController = PageController();
 
-    print(testList.toString());
-    super.initState();
-  }
+  //   super.initState();
+  // }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   _viewPagerController.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 36),
       height: 340,
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: 6,
-        itemBuilder: (BuildContext context, int index) {
-          return Column(
-            children: [
-              Container(
-                height: 58,
-                child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: 7,
-                    scrollDirection: Axis.horizontal,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: ((innerContext, innerIndex) {
-                      return CalendarItem(
-                        itemWidth: (widget._itemWidth),
-                        itemHeight: 58,
-                      );
-                    })),
-              ),
-            ],
-          );
-        },
-      ),
+      child: PageView.builder(
+          controller: widget.viewPagerController,
+          onPageChanged: widget.handleViewPagerChanged,
+          itemCount: widget.calendarDataMap.length,
+          itemBuilder: (BuildContext pageContext, int pageIndex) {
+            return ListView.builder(
+              padding: EdgeInsets.zero,
+              //physics: NeverScrollableScrollPhysics(),
+              itemCount:
+                  widget.calendarDataMap[widget.monthList[pageIndex]].length,
+              itemBuilder: (BuildContext weekContext, int weekIndex) {
+                return SizedBox(
+                  height: 58,
+                  child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: widget
+                          .calendarDataMap[widget.monthList[pageIndex]]
+                              [weekIndex]
+                          .length,
+                      scrollDirection: Axis.horizontal,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: ((innerContext, innerIndex) {
+                        return CalendarItem(
+                          itemWidth: (widget.itemWidth),
+                          itemHeight: 58,
+                          calendarData: widget
+                                  .calendarDataMap[widget.monthList[pageIndex]]
+                              [weekIndex][innerIndex],
+                        );
+                      })),
+                );
+              },
+            );
+          }),
     );
   }
 }
@@ -345,37 +495,48 @@ class CalendarItem extends StatelessWidget {
     super.key,
     required this.itemWidth,
     required this.itemHeight,
+    required this.calendarData,
   });
   final double itemWidth;
   final double itemHeight;
+  final CalendarData calendarData;
 
   @override
   Widget build(BuildContext context) {
+    int calDay = calendarData.dateValue.day;
+    bool isFirstDay = calDay == 1;
+    bool isToday = false;
+    if (calendarData.dateID ==
+        int.parse(DateFormat('yyyyMMdd').format(DateTime.now()).toString())) {
+      isToday = true;
+    }
     return Container(
       width: itemWidth,
       height: itemHeight,
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 5.5),
-      //확인용
-      // decoration: BoxDecoration(
-      //     color: Colors.amber, border: Border.all(color: Colors.white)),
+      margin: EdgeInsets.only(
+          left: (isFirstDay
+              ? (calendarData.dateValue.weekday - 1) * itemWidth
+              : 0)),
       child: Stack(children: [
-        Center(
-          child: Opacity(
-            opacity: 0.3,
-            child: Image.asset(
-              "images/ic_emotion_dullness.png",
+        if (calendarData.todayEmo != 0)
+          Center(
+            child: Opacity(
+              opacity: isToday ? 1.0 : 0.3,
+              child: Image.asset(
+                emoList[calendarData.todayEmo]
+                    ['emoIconImage'], //"images/ic_emotion_dullness.png",
+              ),
             ),
           ),
-        ),
         Center(
           child: Text(
-            "30",
+            '$calDay',
             style: TextStyle(
               fontFamily: 'SpoqaHanSansNeo',
-              fontWeight: FontWeight.w400,
+              fontWeight: isToday ? FontWeight.w700 : FontWeight.w400,
               fontSize: 12,
-              //color: Color(0xFF6D6D6D), //TODO 오늘 외
-              color: Color(0xFF2D2D2D), //TODO 오늘 날짜
+              color: isToday ? Color(0xFF2D2D2D) : Color(0xFF6D6D6D),
             ),
           ),
         ),
