@@ -69,27 +69,9 @@ class CalendarDataService extends ChangeNotifier {
         milliseconds: newDate.millisecond,
         microseconds: newDate.microsecond));
 
-    //date = DateTime(date.year, date.month - 2, 1);  //Test
     //시작일 저장
     saveStartDate(date);
-    //시작한 달의 비활성화 날짜 가져오기
-    /*
-    if (date.day > 1) {
-      for (int j = date.day - 1; 0 < j; j--) {
-        DateTime calDate1 = date.subtract(Duration(days: j));
-        String sdfString1 = DateFormat('yyyyMMdd').format(calDate1).toString();
-        int id1 = int.parse(sdfString1);
 
-        CalendarData calendarData1 = CalendarData(
-          dateID: id1,
-          dateValue: calDate1,
-          todayEmoIco: 'images/emo_circle.png',
-          todayEmoContent: '',
-          isEnabled: false,
-        );
-        calendarDataList.add(calendarData1);
-      }
-    }*/
     //시작부터 30일, 활성화 날짜 가져오기
     for (int i = 0; i < maxDayCnt; i++) {
       DateTime calDate2 = date.add(Duration(days: i));
@@ -104,29 +86,6 @@ class CalendarDataService extends ChangeNotifier {
         isEnabled: true,
       );
       calendarDataList.add(calendarData2);
-
-      //마지막 달의 비활성화 날짜 가져오기
-      /*
-      if (i == MAX_DAY_COUNT-1) {
-        DateTime lastDate = DateTime(calDate2.year, calDate2.month + 1, 0);
-        if (calDate2.day != lastDate.day) {
-          for (int x = calDate2.day + 1; x < lastDate.day + 1; x++) {
-            DateTime calDate3 = DateTime(calDate2.year, calDate2.month, x);
-            String sdfString3 =
-                DateFormat('yyyyMMdd').format(calDate3).toString();
-            int id3 = int.parse(sdfString3);
-
-            CalendarData calendarData3 = CalendarData(
-              dateID: id3,
-              dateValue: calDate3,
-              todayEmoIco: 'images/emo_circle.png',
-              todayEmoContent: '',
-              isEnabled: false,
-            );
-            calendarDataList.add(calendarData3);
-          }
-        }
-      }*/
     }
     saveCalendarDataList();
   }

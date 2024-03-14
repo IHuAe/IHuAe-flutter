@@ -1,13 +1,12 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:week_of_year/date_week_extensions.dart';
 
 import 'package:flutter_ihuae/main.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/title_bar.dart';
-import 'package:week_of_year/date_week_extensions.dart';
 
 // 두번째 페이지
 class CalendarPage extends StatefulWidget {
@@ -18,7 +17,6 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  //TODO 옮기기
   List<CalendarData> calendarDataList = [];
   Map calendarDataMap = HashMap();
   List<int> monthList = [];
@@ -75,7 +73,13 @@ class _CalendarPageState extends State<CalendarPage> {
                   children: [
                     TitleBar(title: "캘린더"),
                     SizedBox(height: 20),
-                    CalendarHandler(calendarPadding: _calendarPadding),
+                    CalendarHandler(
+                      monthList: monthList,
+                      currentPageIndex: _currentPageIndex,
+                      calendarPadding: _calendarPadding,
+                      handleViewPagerChanged: _handleViewPagerChanged,
+                      updateCurrentPageIndex: _updateCurrentPageIndex,
+                    ),
                     SizedBox(height: 37),
                     WeekHeaderContainer(
                         calendarPadding: _calendarPadding,
@@ -181,20 +185,15 @@ class _CalendarPageState extends State<CalendarPage> {
 
       calendarDataMap[monthKey] = weekDataHash;
     }
-
-    print(
-        "======calendarDataMap : ${calendarDataMap.toString()}===================");
   }
 
   void _handleViewPagerChanged(int currentPageIndex) {
     setState(() {
-      print("======call _handleViewPagerChanged $currentPageIndex=======");
       _currentPageIndex = currentPageIndex;
     });
   }
 
   void _updateCurrentPageIndex(int index) {
-    print("======call _updateCurrentPageIndex======= $index");
     _viewPagerController.animateToPage(
       index,
       duration: const Duration(milliseconds: 400),
@@ -301,28 +300,49 @@ class TodayEmoContainer extends StatelessWidget {
   }
 }
 
-class CalendarHandler extends StatelessWidget {
+class CalendarHandler extends StatefulWidget {
   const CalendarHandler({
     super.key,
-    required double calendarPadding,
-  }) : _calendarPadding = calendarPadding;
+    required this.calendarPadding,
+    required this.monthList,
+    required this.currentPageIndex,
+    required this.handleViewPagerChanged,
+    required this.updateCurrentPageIndex,
+  });
 
-  final double _calendarPadding;
+  final double calendarPadding;
 
+  final List<int> monthList;
+  final int currentPageIndex;
+  final void Function(int) handleViewPagerChanged;
+  final void Function(int) updateCurrentPageIndex;
+
+  @override
+  State<CalendarHandler> createState() => _CalendarHandlerState();
+}
+
+class _CalendarHandlerState extends State<CalendarHandler> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: _calendarPadding),
+      padding: EdgeInsets.symmetric(horizontal: widget.calendarPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(
-            'images/btn_cal_left.png',
-            width: 12,
-            height: 18,
+          GestureDetector(
+            onTap: () {
+              if (widget.currentPageIndex > 0) {
+                widget.updateCurrentPageIndex(widget.currentPageIndex - 1);
+              }
+            },
+            child: Image.asset(
+              'images/btn_cal_left.png',
+              width: 12,
+              height: 18,
+            ),
           ),
           Text(
-            '4월',
+            '${widget.monthList[widget.currentPageIndex]}월',
             style: TextStyle(
               fontFamily: 'SpoqaHanSansNeo',
               color: Color(0xFF4A4A4A),
@@ -330,10 +350,17 @@ class CalendarHandler extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          Image.asset(
-            'images/btn_cal_right.png',
-            width: 12,
-            height: 18,
+          GestureDetector(
+            onTap: () {
+              if (widget.currentPageIndex < widget.monthList.length) {
+                widget.updateCurrentPageIndex(widget.currentPageIndex + 1);
+              }
+            },
+            child: Image.asset(
+              'images/btn_cal_right.png',
+              width: 12,
+              height: 18,
+            ),
           ),
         ],
       ),
@@ -399,40 +426,20 @@ class CalendarContainer extends StatefulWidget {
 }
 
 class _CalendarContainerState extends State<CalendarContainer> {
-  // List<CalendarData> calendarDataList = [];
-  // Map calendarDataMap = HashMap();
-  // List<int> monthList = [];
-  // int _currentPageIndex = 0;
-  // late PageController _viewPagerController;
-
-  // @override
-  // void initState() {
-  //   setCalendarDataList();
-  //   setCalendarDataMap();
-  //   _viewPagerController = PageController();
-
-  //   super.initState();
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _viewPagerController.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 36),
       height: 340,
       child: PageView.builder(
+          physics: NeverScrollableScrollPhysics(),
           controller: widget.viewPagerController,
           onPageChanged: widget.handleViewPagerChanged,
           itemCount: widget.calendarDataMap.length,
           itemBuilder: (BuildContext pageContext, int pageIndex) {
             return ListView.builder(
               padding: EdgeInsets.zero,
-              //physics: NeverScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(),
               itemCount:
                   widget.calendarDataMap[widget.monthList[pageIndex]].length,
               itemBuilder: (BuildContext weekContext, int weekIndex) {
@@ -525,7 +532,7 @@ class CalendarItem extends StatelessWidget {
               opacity: isToday ? 1.0 : 0.3,
               child: Image.asset(
                 emoList[calendarData.todayEmo]
-                    ['emoIconImage'], //"images/ic_emotion_dullness.png",
+                    ['emoIconImage'], 
               ),
             ),
           ),
