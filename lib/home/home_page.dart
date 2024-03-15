@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_ihuae/main.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
+import 'package:flutter_ihuae/services/emo_item.dart';
 import 'package:provider/provider.dart';
 
 // 첫번째 페이지
@@ -88,10 +89,7 @@ class _TopContainerState extends State<TopContainer> {
                 ),
                 Expanded(
                   child: Text(
-                    emoList[todayEmoNum]['emoName'],
-                    // todayEmoNum == 0
-                    //     ? "오늘의 기분을 표현해보세요"
-                    //     : emoList[todayEmoNum]['emoName'],
+                    EmoItem(emoNo: todayEmoNum).getEmoName(),
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontFamily: 'SpoqaHanSansNeo',
@@ -103,7 +101,7 @@ class _TopContainerState extends State<TopContainer> {
                 ),
                 SizedBox(width: 15),
                 Image.asset(
-                  emoList[todayEmoNum]['emoIconImage'],
+                  EmoItem(emoNo: todayEmoNum).getEmoIconImage(),
                   width: 27,
                   height: 27,
                 ),
@@ -430,12 +428,12 @@ class EmoGridItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
-                    emoList[emoNo]['emoIconImage'], //emoImage,
+                    EmoItem(emoNo: emoNo).getEmoIconImage(),
                     width: 40,
                     height: 40,
                   ),
                   Text(
-                    emoList[emoNo]['emoName'],
+                    EmoItem(emoNo: emoNo).getEmoName(),
                     style: TextStyle(
                       fontFamily: 'SpoqaHanSansNeo',
                       fontSize: 14,

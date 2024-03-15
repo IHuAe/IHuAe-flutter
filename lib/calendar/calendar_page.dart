@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:flutter_ihuae/services/emo_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:week_of_year/date_week_extensions.dart';
@@ -254,13 +255,13 @@ class TodayEmoContainer extends StatelessWidget {
                     Row(
                       children: [
                         Image.asset(
-                          emoList[todayEmoId]['emoIconImage'],
+                          EmoItem(emoNo: todayEmoId).getEmoIconImage(),
                         ),
                         SizedBox(
                           width: 18,
                         ),
                         Text(
-                          emoList[todayEmoId]['emoDescription'],
+                          EmoItem(emoNo: todayEmoId).getEmoDescription(),
                           style: TextStyle(
                             fontFamily: "SpoqaHanSansNeo",
                             fontWeight: FontWeight.w400,
@@ -531,8 +532,7 @@ class CalendarItem extends StatelessWidget {
             child: Opacity(
               opacity: isToday ? 1.0 : 0.3,
               child: Image.asset(
-                emoList[calendarData.todayEmo]
-                    ['emoIconImage'], 
+                EmoItem(emoNo: calendarData.todayEmo).getEmoIconImage(),
               ),
             ),
           ),

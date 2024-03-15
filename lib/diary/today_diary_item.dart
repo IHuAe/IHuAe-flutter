@@ -1,11 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ihuae/services/diary_data_service.dart';
 
-class TodayDiaryItem extends StatelessWidget {
+class TodayDiaryItem extends StatefulWidget {
   const TodayDiaryItem({
     super.key,
+    required this.diaryDataService,
+    required this.dateID,
+    required this.diaryIndex,
+    required this.diaryData,
   });
+  final DiaryDataService diaryDataService;
+  final int dateID;
+  final int diaryIndex;
+  final DiaryData diaryData;
 
+  @override
+  State<TodayDiaryItem> createState() => _TodayDiaryItemState();
+}
+
+class _TodayDiaryItemState extends State<TodayDiaryItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,7 +54,9 @@ class TodayDiaryItem extends StatelessWidget {
                     ),
                     GestureDetector(
                       onTap: () {
-                        print("삭제");
+                        widget.diaryDataService
+                            .deleteDiaryData(widget.dateID, widget.diaryIndex);
+                        //print("삭제");
                       },
                       child: Text(
                         "삭제",

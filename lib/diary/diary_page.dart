@@ -45,13 +45,16 @@ class _DiaryPageState extends State<DiaryPage> {
                         //오늘의 문답
                         TodayQnAContainer(
                           index: selectedPos,
-                          emoNo: calendarDataService.calendarDataList[selectedPos].todayEmo,
+                          emoNo: calendarDataService
+                              .calendarDataList[selectedPos].todayEmo,
                         ),
                         //간격
                         SizedBox(height: 24),
                         //오늘의 기록
                         Expanded(
-                          child: TodayDiaryListContainer(),
+                          child: TodayDiaryListContainer(
+                              dateID: calendarDataService
+                                  .calendarDataList[selectedPos].dateID),
                         ),
                       ],
                     ),
@@ -60,7 +63,9 @@ class _DiaryPageState extends State<DiaryPage> {
                   Positioned(
                     right: 22.5,
                     bottom: 11.5,
-                    child: WriteDiaryBtn(),
+                    child: WriteDiaryBtn(
+                        dateID: calendarDataService
+                            .calendarDataList[selectedPos].dateID),
                   ),
                 ],
               ),

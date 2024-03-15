@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_ihuae/main.dart';
+import 'package:flutter_ihuae/services/emo_item.dart';
 import 'package:flutter_ihuae/services/qna_data_service.dart';
+import 'package:flutter_ihuae/title_bar.dart';
 import 'package:provider/provider.dart';
 
 class TodayQnAContainer extends StatelessWidget {
@@ -16,6 +21,7 @@ class TodayQnAContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<QnaDataService>(builder: (context, qnaDataService, child) {
       List<QnaData> qnaDataList = qnaDataService.qnaDataList;
+      bool isAnsEmpty = qnaDataList[index].answer.isEmpty;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -36,16 +42,22 @@ class TodayQnAContainer extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               height: 144,
               decoration: BoxDecoration(
+                color: isAnsEmpty ? null : EmoItem(emoNo: emoNo).getEmoColor(),
                 border: Border.all(
                   width: 1.0,
-                  color: emoList[emoNo]['emoColor'],
+                  color: EmoItem(emoNo: emoNo).getEmoStrokeColor(),
                 ),
                 borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                  colors: [emoList[emoNo]['emoColor'], Colors.white],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                gradient: isAnsEmpty
+                    ? LinearGradient(
+                        colors: [
+                          EmoItem(emoNo: emoNo).getEmoGradientColor(),
+                          Colors.white
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      )
+                    : null,
               ),
               child: Row(
                 children: [
@@ -57,7 +69,7 @@ class TodayQnAContainer extends StatelessWidget {
                         Text(
                           "Q.${index + 1}",
                           style: TextStyle(
-                            color: emoList[emoNo]['emoTextColor'],
+                            color: EmoItem(emoNo: emoNo).getEmoTextColor(),
                             fontSize: 16,
                             fontFamily: '',
                             fontWeight: FontWeight.w700,
@@ -69,7 +81,7 @@ class TodayQnAContainer extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: TextStyle(
-                            color: emoList[emoNo]['emoTextColor'],
+                            color: EmoItem(emoNo: emoNo).getEmoTextColor(),
                             fontSize: 16,
                             fontFamily: '',
                             fontWeight: FontWeight.w500,
@@ -79,21 +91,35 @@ class TodayQnAContainer extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 62),
-                  Container(
-                    width: 64,
-                    height: 64,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Text(
-                      qnaDataList[index].answer.isEmpty ? "기록하기" : "내 답변\n보기",
-                      style: TextStyle(
-                        color: emoList[emoNo]['emoTextColor'],
-                        fontSize: 12,
-                        fontFamily: '',
-                        fontWeight: FontWeight.w500,
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => WriteQnaPage(
+                              index: index,
+                              qnaData: qnaDataList[index],
+                              qnaDataService: qnaDataService),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        isAnsEmpty ? "기록하기" : "내 답변\n보기",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: EmoItem(emoNo: emoNo).getEmoTextColor(),
+                          fontSize: 12,
+                          fontFamily: '',
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),
@@ -104,5 +130,152 @@ class TodayQnAContainer extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+class WriteQnaPage extends StatefulWidget {
+  const WriteQnaPage({
+    super.key,
+    required this.index,
+    required this.qnaData,
+    required this.qnaDataService,
+  });
+  final int index;
+  final QnaData qnaData;
+  final QnaDataService qnaDataService;
+
+  @override
+  State<WriteQnaPage> createState() => _WriteQnaPageState();
+}
+
+class _WriteQnaPageState extends State<WriteQnaPage> {
+  String ans = "";
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    ans = widget.qnaData.answer;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        shadowColor: Colors.black,
+        centerTitle: true,
+        title: Text(
+          widget.qnaData.answer.isEmpty ? "문답 작성" : "문답 보기",
+          style: TextStyle(
+              color: Color(0xFF4A4A4A),
+              fontSize: 16,
+              fontFamily: "SpoqaHanSansNeo",
+              fontWeight: FontWeight.w500),
+        ),
+        actions: [
+          GestureDetector(
+            onTap: () {
+              widget.qnaDataService.updateAnswer(widget.index, ans);
+              Navigator.pop(context);
+            },
+            child: Container(
+              width: 87,
+              height: 49,
+              padding:
+                  EdgeInsets.only(top: 18, bottom: 16, left: 20, right: 20),
+              child: Text(
+                widget.qnaData.answer.isEmpty ? "작성 완료" : "수정",
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                  fontFamily: "",
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                  color: Color(0xFF8291E6),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+      body: Column(
+        children: [
+          //질문컨테이너
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            decoration: BoxDecoration(
+              color: Color(0xFFFAFAFA),
+              border: Border(
+                top: BorderSide(
+                  color: Color(0xFFD9D9D9),
+                  width: 1.0,
+                ),
+              ),
+            ),
+            child: Text("Q.${widget.index + 1}\n${widget.qnaData.question}"),
+          ),
+          //답변 컨테이너
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(top: 23, bottom: 36),
+                      child: Scrollbar(
+                        controller: _scrollController,
+                        //thumbVisibility: true,
+                        child: TextFormField(
+                          initialValue: widget.qnaData.answer,
+                          onChanged: (value) {
+                            setState(() {
+                              ans = value;
+                            });
+                          },
+                          maxLines: null,
+                          maxLength: 1000,
+                          style: TextStyle(
+                            fontFamily: 'SpoqaHanSansNeo',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16,
+                            color: Color(0xFF6D6D6D),
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "당신의 이야기를 들려주세요.",
+                            hintStyle: TextStyle(
+                              fontFamily: 'SpoqaHanSansNeo',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Color(0xFFC4C4C4),
+                            ),
+                            counterText: "",
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 22),
+                    width: double.infinity,
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      "${ans.length}/1000자",
+                      style: TextStyle(
+                        fontFamily: 'SpoqaHanSansNeo',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Color(0xFFD9D9D9),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

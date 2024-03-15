@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_ihuae/main.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
+import 'package:flutter_ihuae/services/emo_item.dart';
 
 class WeekItem extends StatelessWidget {
   const WeekItem({
@@ -28,7 +29,7 @@ class WeekItem extends StatelessWidget {
                   child: Opacity(
                     opacity: (index == calendarDataService.dDay) ? 1.0 : 0.3,
                     child: Image.asset(
-                      emoList[emoNum]['emoIconImage'],
+                      EmoItem(emoNo: emoNum).getEmoIconImage(),
                       fit: BoxFit.fitHeight,
                     ),
                   ),
