@@ -8,15 +8,18 @@ class DiaryData {
   DiaryData({
     required this.diaryTitle,
     required this.diaryContent,
+    required this.editDateTime,
   });
 
   String diaryTitle;
   String diaryContent;
+  DateTime editDateTime;
 
   Map toJson() {
     return {
       'diaryTitle': diaryTitle,
       'diaryContent': diaryContent,
+      'editDateTime': editDateTime,
     };
   }
 
@@ -24,6 +27,7 @@ class DiaryData {
     return DiaryData(
       diaryTitle: json['diaryTitle'],
       diaryContent: json['diaryContent'],
+      editDateTime: DateTime.parse(json['editDateTime']),
     );
   }
 }
@@ -41,83 +45,59 @@ class DiaryDataService extends ChangeNotifier {
     if (jsonString == null) {
       return;
     }
-    print(
-        "================$jsonString=====================================================");
-    Map diaryDataJsonMap = jsonDecode(jsonString);
-    print("===============step1");
-    Iterable keys = diaryDataJsonMap.keys;
-    print("===============step2");
+
+    Map diaryDataJsonMap1 = jsonDecode(jsonString);
+    Map diaryDataJsonMap2 = diaryDataJsonMap1.map<int, String>(
+      (k, v) => MapEntry(int.parse(k), v), // parse String back to int
+    );
+    Iterable keys = diaryDataJsonMap2.keys;
+
     for (var k in keys) {
-      print("===============step3");
-      List diaryDataJsonList = diaryDataJsonMap[k];
-      print("===============step4");
+      var listJsonString = diaryDataJsonMap2[k];
+      if (listJsonString == null) continue;
+      List diaryDataJsonList = jsonDecode(listJsonString);
       List diaryDataList =
           diaryDataJsonList.map((json) => DiaryData.fromJson(json)).toList();
       diaryDataMap[k] = diaryDataList;
     }
-
-    // calendarDataList = calendarDataJsonList
-    //     .map((json) => CalendarData.fromJson(json))ajou
-    //     .toList();
   }
 
   //diaryDataMap 로컬 저장
   saveDiaryDataMap() {
-    Map diaryDataJsonMap = HashMap();
+    Map diaryDataJsonMap1 = HashMap();
     Iterable keys = diaryDataMap.keys;
-    //String jsonString = '{';
     String jsonString = '';
-    //bool isFirst = true;
+
     for (var k in keys) {
       List<DiaryData> diaryDataList = diaryDataMap[k];
+
       List diaryDataJsonList =
           diaryDataList.map((diaryData) => diaryData.toJson()).toList();
-      print(
-          "=========saveDiaryDataMap diaryDataJsonList:=======$diaryDataJsonList=====================================================");
-      diaryDataJsonMap[k] = diaryDataJsonList;
-
-      // if (isFirst) {
-      //   jsonString += '"$k": $diaryDataJsonList';
-      // } else {
-      //   jsonString += ', "$k": $diaryDataJsonList';
-      // }
-
-      //isFirst = false;
+      String listJsonString =
+          jsonEncode(diaryDataJsonList, toEncodable: myEncode);
+      diaryDataJsonMap1[k] = listJsonString;
     }
-    //jsonString += "}";
-    //jsonString = _convertToJsonStringQuotes(raw: diaryDataJsonMap.toString());
-    //// diaryDataJsonMap.toString(); //jsonEncode(diaryDataJsonMap);
-    jsonString = jsonEncode(diaryDataJsonMap);
-    print(
-        "=========saveDiaryDataMap:=======$jsonString=====================================================");
+
+    Map diaryDataJsonMap2 = diaryDataJsonMap1.map<String, String>(
+      (k, v) => MapEntry(k.toString(), v), // convert int to String
+    );
+    jsonString = jsonEncode(diaryDataJsonMap2);
+
     prefs.setString('diaryDataMap', jsonString);
   }
 
-  String _convertToJsonStringQuotes({required String raw}) {
-    /// remove space
-    String jsonString = raw.replaceAll(" ", "");
-
-    /// add quotes to json string
-    jsonString = jsonString.replaceAll('{', '{"');
-    jsonString = jsonString.replaceAll(':', '": "');
-    jsonString = jsonString.replaceAll(',', '", "');
-    jsonString = jsonString.replaceAll('}', '"}');
-
-    /// remove quotes on object json string
-    jsonString = jsonString.replaceAll('"{"', '{"');
-    jsonString = jsonString.replaceAll('"}"', '"}');
-
-    /// remove quotes on array json string
-    jsonString = jsonString.replaceAll('"[{', '[{');
-    jsonString = jsonString.replaceAll('}]"', '}]');
-
-    return jsonString;
+  dynamic myEncode(dynamic item) {
+    if (item is DateTime) {
+      return item.toIso8601String();
+    }
+    return item;
   }
 
   createNewDiaryData(int dateID, String title, String content) {
     List<DiaryData> diaryList = diaryDataMap[dateID] ?? [];
 
-    DiaryData diaryData = DiaryData(diaryTitle: title, diaryContent: content);
+    DiaryData diaryData = DiaryData(
+        diaryTitle: title, diaryContent: content, editDateTime: DateTime.now());
     diaryList.add(diaryData);
     diaryDataMap[dateID] = diaryList;
 
@@ -130,6 +110,7 @@ class DiaryDataService extends ChangeNotifier {
     DiaryData diaryData = diaryList[diaryIndex];
     diaryData.diaryTitle = title;
     diaryData.diaryContent = content;
+    diaryData.editDateTime = DateTime.now();
 
     notifyListeners();
     saveDiaryDataMap();

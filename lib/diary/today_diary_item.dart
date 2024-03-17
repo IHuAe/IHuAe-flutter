@@ -1,5 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_ihuae/delete_dialog.dart';
+import 'package:flutter_ihuae/diary/write_diary_page.dart';
 import 'package:flutter_ihuae/services/diary_data_service.dart';
 
 class TodayDiaryItem extends StatefulWidget {
@@ -42,21 +44,34 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        "data",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontFamily: 'SpoqaHanSansNeo',
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF7A7A7A),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WriteDiaryPage(
+                                diaryDataService: widget.diaryDataService,
+                                dateID: widget.dateID,
+                                diaryData: widget.diaryData,
+                                index: widget.diaryIndex,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          widget.diaryData.diaryTitle,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'SpoqaHanSansNeo',
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF7A7A7A),
+                          ),
                         ),
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                        widget.diaryDataService
-                            .deleteDiaryData(widget.dateID, widget.diaryIndex);
-                        //print("삭제");
+                        showDeleteDialog(context);
                       },
                       child: Text(
                         "삭제",
@@ -75,14 +90,29 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    "datadssfsfsdlksjlksdjflsdkfjlsjsdlfkdjslkjsddsdsfsdsfsfsdslkjl",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontFamily: 'SpoqaHanSansNeo',
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF9A9A9A),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => WriteDiaryPage(
+                            diaryDataService: widget.diaryDataService,
+                            dateID: widget.dateID,
+                            diaryData: widget.diaryData,
+                            index: widget.diaryIndex,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      widget.diaryData.diaryContent,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'SpoqaHanSansNeo',
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF9A9A9A),
+                      ),
                     ),
                   ),
                 ),
@@ -90,5 +120,18 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
             ),
           ],
         ));
+  }
+
+  void showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return DeleteDialog(
+          diaryDataService: widget.diaryDataService,
+          dateID: widget.dateID,
+          diaryIndex: widget.diaryIndex,
+        );
+      },
+    );
   }
 }

@@ -88,7 +88,7 @@ class EmoItem {
       "emoName": "만족",
       "emoDescription": "오늘은 만족스러움",
       "emoColor": Color(0xFFDDEDDD),
-      "emoGradientColor": Color(0xFFB4CFF5),
+      "emoGradientColor": Color(0xFFBCEBBA),
       "emoStrokeColor": Color(0xFFDDEDDD),
       "emoTextColor": Color(0xFF86AD84),
     },

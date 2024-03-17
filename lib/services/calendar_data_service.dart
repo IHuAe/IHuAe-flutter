@@ -94,9 +94,7 @@ class CalendarDataService extends ChangeNotifier {
   saveCalendarDataList() {
     List calendarDataJsonList =
         calendarDataList.map((calendarData) => calendarData.toJson()).toList();
-
     String jsonString = jsonEncode(calendarDataJsonList, toEncodable: myEncode);
-    print("=====saveCalendarDataList : $jsonString=======================");
 
     prefs.setString('calendarDataList', jsonString);
   }
@@ -110,7 +108,7 @@ class CalendarDataService extends ChangeNotifier {
       createCalendarData();
       return;
     } //null 이면 첫 접속이기 때문에 달력 데이터 신규 생성
-    print("=====loadCalendarDataList : $jsonString=======================");
+
     dDay = calcularDDay(); //시작일과 오늘 날짜 차를 계산하여 dDay 가져오기
     List calendarDataJsonList = jsonDecode(jsonString);
 
