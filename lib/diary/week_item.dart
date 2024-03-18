@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_ihuae/main.dart';
+
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/services/emo_item.dart';
 

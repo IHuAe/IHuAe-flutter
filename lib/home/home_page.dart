@@ -1,9 +1,8 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_ihuae/main.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/services/emo_item.dart';
-import 'package:provider/provider.dart';
 
 // 첫번째 페이지
 class HomePage extends StatelessWidget {
@@ -51,13 +50,14 @@ class TopContainer extends StatefulWidget {
 class _TopContainerState extends State<TopContainer> {
   @override
   Widget build(BuildContext context) {
+    double statusBarHeight = MediaQuery.of(context).viewPadding.top;
     int dDay = widget.calendarDataService.dDay;
     List<CalendarData> calendarDataList =
         widget.calendarDataService.calendarDataList;
     int todayEmoNum = calendarDataList[dDay].todayEmo;
 
     return Container(
-      height: 169,
+      height: 169 + statusBarHeight,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
         color: Colors.white,
@@ -76,6 +76,7 @@ class _TopContainerState extends State<TopContainer> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: statusBarHeight),
             Row(
               children: [
                 Text(
@@ -205,13 +206,10 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Color.fromRGBO(0, 0, 0, 0.6),
-      alignment: Alignment.center,
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.symmetric(horizontal: 19),
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 19),
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -351,7 +349,6 @@ class EmoGridContainer extends StatefulWidget {
 class _EmoGridContainerState extends State<EmoGridContainer> {
   @override
   Widget build(BuildContext context) {
-    //int selectedEmo = widget.todayEmo;
     return SizedBox(
       height: 165,
       child: GridView.count(
@@ -477,7 +474,7 @@ class _ViewPagerState extends State<ViewPager> with TickerProviderStateMixin {
   late PageController _viewPagerController;
 
   int _currentPageIndex = 0;
-  int _imageCardSize = 3; //TODO 카드 갯수 설정, 디데이 별로 달라짐.
+  int imageCardSize = 3; //TODO 카드 갯수 설정, 디데이 별로 달라짐.
 
   @override
   void initState() {
@@ -493,15 +490,13 @@ class _ViewPagerState extends State<ViewPager> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ViewPagerSwipingBtn(
           currentPageIndex: _currentPageIndex,
-          imageCardSize: _imageCardSize,
+          imageCardSize: imageCardSize,
           onUpdateCurrentPageIndex: _updateCurrentPageIndex,
           isLeft: true,
         ),
@@ -510,7 +505,7 @@ class _ViewPagerState extends State<ViewPager> with TickerProviderStateMixin {
             physics: NeverScrollableScrollPhysics(),
             controller: _viewPagerController,
             onPageChanged: _handleViewPagerChanged,
-            itemCount: _imageCardSize,
+            itemCount: imageCardSize,
             itemBuilder: (BuildContext context, int index) {
               int imageNum = index + 1;
               return Image.asset(
@@ -522,7 +517,7 @@ class _ViewPagerState extends State<ViewPager> with TickerProviderStateMixin {
         ),
         ViewPagerSwipingBtn(
           currentPageIndex: _currentPageIndex,
-          imageCardSize: _imageCardSize,
+          imageCardSize: imageCardSize,
           onUpdateCurrentPageIndex: _updateCurrentPageIndex,
           isLeft: false,
         ),

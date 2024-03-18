@@ -1,12 +1,9 @@
-import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_ihuae/main.dart';
+
 import 'package:flutter_ihuae/services/emo_item.dart';
 import 'package:flutter_ihuae/services/qna_data_service.dart';
-import 'package:flutter_ihuae/title_bar.dart';
-import 'package:provider/provider.dart';
 
 class TodayQnAContainer extends StatelessWidget {
   const TodayQnAContainer({
@@ -151,10 +148,11 @@ class WriteQnaPage extends StatefulWidget {
 class _WriteQnaPageState extends State<WriteQnaPage> {
   String ans = "";
   final ScrollController _scrollController = ScrollController();
-
+  bool isEditor = false;
   @override
   void initState() {
     ans = widget.qnaData.answer;
+    isEditor = ans.isEmpty;
     super.initState();
   }
 
@@ -165,7 +163,7 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
         shadowColor: Colors.black,
         centerTitle: true,
         title: Text(
-          widget.qnaData.answer.isEmpty ? "문답 작성" : "문답 보기",
+          isEditor ? "문답 작성" : "문답 보기",
           style: TextStyle(
               color: Color(0xFF4A4A4A),
               fontSize: 16,
@@ -175,8 +173,14 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
         actions: [
           GestureDetector(
             onTap: () {
-              widget.qnaDataService.updateAnswer(widget.index, ans);
-              Navigator.pop(context);
+              if (isEditor) {
+                widget.qnaDataService.updateAnswer(widget.index, ans);
+                Navigator.pop(context);
+              } else {
+                setState(() {
+                  isEditor = true;
+                });
+              }
             },
             child: Container(
               width: 87,
@@ -184,7 +188,7 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
               padding:
                   EdgeInsets.only(top: 18, bottom: 16, left: 20, right: 20),
               child: Text(
-                widget.qnaData.answer.isEmpty ? "작성 완료" : "수정",
+                isEditor ? "작성 완료" : "수정",
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   fontFamily: "",
@@ -225,8 +229,8 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
                       padding: EdgeInsets.only(top: 23, bottom: 36),
                       child: Scrollbar(
                         controller: _scrollController,
-                        //thumbVisibility: true,
                         child: TextFormField(
+                          readOnly: !isEditor,
                           initialValue: widget.qnaData.answer,
                           onChanged: (value) {
                             setState(() {
@@ -256,20 +260,37 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 22),
-                    width: double.infinity,
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "${ans.length}/1000자",
-                      style: TextStyle(
-                        fontFamily: 'SpoqaHanSansNeo',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Color(0xFFD9D9D9),
+                  if (!isEditor)
+                    Container(
+                      margin: EdgeInsets.only(bottom: 22),
+                      width: double.infinity,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        DateFormat('yyyy.MM.dd aa hh:mm')
+                            .format(widget.qnaData.regDateTime),
+                        style: TextStyle(
+                          fontFamily: 'SpoqaHanSansNeo',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: Color(0xFFD9D9D9),
+                        ),
                       ),
                     ),
-                  ),
+                  if (isEditor)
+                    Container(
+                      margin: EdgeInsets.only(bottom: 22),
+                      width: double.infinity,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "${ans.length}/1000자",
+                        style: TextStyle(
+                          fontFamily: 'SpoqaHanSansNeo',
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: Color(0xFFD9D9D9),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_ihuae/delete_dialog.dart';
@@ -43,6 +44,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                 alignment: Alignment.topLeft,
                 child: Row(
                   children: [
+                    //제목 시작
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -60,6 +62,8 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                         },
                         child: Text(
                           widget.diaryData.diaryTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'SpoqaHanSansNeo',
@@ -69,6 +73,8 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                         ),
                       ),
                     ),
+                    //제목 끝
+                    //내용 시작
                     GestureDetector(
                       onTap: () {
                         showDeleteDialog(context);
@@ -87,6 +93,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                 ),
               ),
             ),
+            //내용 끝
             Row(
               children: [
                 Expanded(
@@ -106,6 +113,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                     },
                     child: Text(
                       widget.diaryData.diaryContent,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
@@ -115,6 +123,9 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                       ),
                     ),
                   ),
+                ),
+                SizedBox(
+                  width: 1,
                 ),
               ],
             ),
@@ -130,6 +141,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
           diaryDataService: widget.diaryDataService,
           dateID: widget.dateID,
           diaryIndex: widget.diaryIndex,
+          isDetailPage: false,
         );
       },
     );

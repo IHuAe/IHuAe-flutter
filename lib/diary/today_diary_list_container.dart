@@ -39,7 +39,7 @@ class _TodayDiaryListContainerState extends State<TodayDiaryListContainer> {
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.only(top: 0, bottom: 90, right: 0, left: 0),
-              itemCount: diaryDataList.length, // RecyclerView의 아이템 수에 맞게 조절하세요
+              itemCount: diaryDataList.length,
               itemBuilder: (context, index) {
                 return TodayDiaryItem(
                     diaryDataService: diaryDataService,

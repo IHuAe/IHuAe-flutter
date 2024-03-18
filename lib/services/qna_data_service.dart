@@ -42,18 +42,20 @@ class QnaData {
     required this.dateID,
     required this.question,
     required this.answer,
+    required this.regDateTime,
   });
 
   int dateID;
   String question;
-
   String answer;
+  DateTime regDateTime;
 
   Map toJson() {
     return {
       'dateID': dateID,
       'question': question,
       'answer': answer,
+      'regDateTime': regDateTime,
     };
   }
 
@@ -62,6 +64,7 @@ class QnaData {
       dateID: json['dateID'],
       question: json['question'],
       answer: json['answer'],
+      regDateTime: DateTime.parse(json['regDateTime']),
     );
   }
 }
@@ -91,9 +94,16 @@ class QnaDataService extends ChangeNotifier {
     List qnaDataJsonList =
         qnaDataList.map((qnaData) => qnaData.toJson()).toList();
 
-    String jsonString = jsonEncode(qnaDataJsonList);
+    String jsonString = jsonEncode(qnaDataJsonList, toEncodable: myEncode);
 
     prefs.setString('qnaDataList', jsonString);
+  }
+
+  dynamic myEncode(dynamic item) {
+    if (item is DateTime) {
+      return item.toIso8601String();
+    }
+    return item;
   }
 
   createQnaDataList() {
@@ -110,8 +120,12 @@ class QnaDataService extends ChangeNotifier {
       String sdfString = DateFormat('yyyyMMdd').format(dd).toString();
       int id = int.parse(sdfString);
 
-      QnaData qnaData =
-          QnaData(dateID: id, question: questionList[i], answer: '');
+      QnaData qnaData = QnaData(
+        dateID: id,
+        question: questionList[i],
+        answer: '',
+        regDateTime: DateTime.now(),
+      );
       qnaDataList.add(qnaData);
     }
 
@@ -121,6 +135,7 @@ class QnaDataService extends ChangeNotifier {
   updateAnswer(int index, String ans) {
     QnaData qnaData = qnaDataList[index];
     qnaData.answer = ans;
+    qnaData.regDateTime = DateTime.now();
     notifyListeners();
     saveQnaDataList();
   }

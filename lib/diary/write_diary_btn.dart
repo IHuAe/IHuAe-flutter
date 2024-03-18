@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ihuae/diary/write_diary_page.dart';
 import 'package:flutter_ihuae/services/diary_data_service.dart';
-import 'package:provider/provider.dart';
 
 class WriteDiaryBtn extends StatefulWidget {
   const WriteDiaryBtn({

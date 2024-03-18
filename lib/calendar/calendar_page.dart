@@ -1,11 +1,10 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:flutter_ihuae/services/emo_item.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:week_of_year/date_week_extensions.dart';
 
-import 'package:flutter_ihuae/main.dart';
+import 'package:flutter_ihuae/services/emo_item.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/title_bar.dart';
 
@@ -39,11 +38,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    Size _displaySize = MediaQuery.of(context).size;
-    double _displaySizeWidth = _displaySize.width;
+    Size displaySize = MediaQuery.of(context).size;
+    double displaySizeWidth = displaySize.width;
 
-    double _calendarPadding = 36;
-    double _itemWidth = (_displaySizeWidth - _calendarPadding * 2) / 7;
+    double calendarPadding = 36;
+    double itemWidth = (displaySizeWidth - calendarPadding * 2) / 7;
+    double statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
     return Consumer<CalendarDataService>(
       builder: (context, calendarDataService, child) {
@@ -72,23 +72,23 @@ class _CalendarPageState extends State<CalendarPage> {
                 ),
                 child: Column(
                   children: [
+                    SizedBox(height: statusBarHeight),
                     TitleBar(title: "캘린더"),
                     SizedBox(height: 20),
                     CalendarHandler(
                       monthList: monthList,
                       currentPageIndex: _currentPageIndex,
-                      calendarPadding: _calendarPadding,
+                      calendarPadding: calendarPadding,
                       handleViewPagerChanged: _handleViewPagerChanged,
                       updateCurrentPageIndex: _updateCurrentPageIndex,
                     ),
                     SizedBox(height: 37),
                     WeekHeaderContainer(
-                        calendarPadding: _calendarPadding,
-                        itemWidth: _itemWidth),
+                        calendarPadding: calendarPadding, itemWidth: itemWidth),
                     SizedBox(height: 19),
                     CalendarContainer(
                       calendarDataService: calendarDataService,
-                      itemWidth: _itemWidth,
+                      itemWidth: itemWidth,
                       calendarDataList: calendarDataList,
                       calendarDataMap: calendarDataMap,
                       monthList: monthList,
@@ -278,10 +278,8 @@ class TodayEmoContainer extends StatelessWidget {
                         calendarDataService
                             .calendarDataList[calendarDataService.dDay]
                             .todayEmoContent,
-                        //"sldfskflsdkjfsl;dfjdsklfjsd;lkfjs;lkfjsl;fkjsd;lkfjsd;lkfjsl;kjfd;",
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-
                         style: TextStyle(
                           fontFamily: "SpoqaHanSansNeo",
                           fontWeight: FontWeight.w400,

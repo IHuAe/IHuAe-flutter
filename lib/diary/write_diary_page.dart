@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter_ihuae/delete_dialog.dart';
@@ -44,6 +45,61 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
           diaryDataService: widget.diaryDataService,
           dateID: widget.dateID,
           diaryIndex: widget.index,
+          isDetailPage: true,
+        );
+      },
+    );
+  }
+
+  void showConfirmDialog(BuildContext context, bool isTitle) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          contentPadding: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
+          content: Container(
+            width: 280,
+            height: 143,
+            padding: EdgeInsets.only(top: 31, bottom: 25),
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(10.0)),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Text(
+                    "${isTitle ? "제목" : "내용"}을 입력해주세요.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF4A4A4A)),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 40,
+                      width: 66,
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "확인",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF4A4A4A)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -89,8 +145,14 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
             ),
           GestureDetector(
             onTap: () {
-              if (title.isEmpty) return;
-              if (content.isEmpty) return;
+              if (title.isEmpty) {
+                showConfirmDialog(context, true);
+                return;
+              }
+              if (content.isEmpty) {
+                showConfirmDialog(context, false);
+                return;
+              }
               if (isEditor) {
                 if (widget.index < 0) {
                   widget.diaryDataService
@@ -103,8 +165,6 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
               } else {
                 showDeleteDialog(context);
               }
-
-              //Navigator.pop(context);
             },
             child: Container(
               height: 49,

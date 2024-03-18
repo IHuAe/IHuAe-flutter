@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ihuae/services/chat_data_service.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:flutter_ihuae/home/home_page.dart';
 import 'package:flutter_ihuae/calendar/calendar_page.dart';
@@ -7,8 +11,6 @@ import 'package:flutter_ihuae/chat/chat_page.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/services/diary_data_service.dart';
 import 'package:flutter_ihuae/services/qna_data_service.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 late SharedPreferences prefs;
 
@@ -21,6 +23,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => CalendarDataService()),
         ChangeNotifierProvider(create: (context) => QnaDataService()),
         ChangeNotifierProvider(create: (context) => DiaryDataService()),
+        ChangeNotifierProvider(create: (context) => ChatDataService()),
       ],
       child: const MyApp(),
     ),
@@ -35,6 +38,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'IhuAe',
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''),
+        Locale('ko', ''),
+      ],
       theme: ThemeData(
         fontFamily: 'SpoqaHanSansNeo',
         primarySwatch: Colors.blue,
@@ -76,8 +88,12 @@ class _BasePageState extends State<BasePage> {
           builder: (context, qnaDataService, child) {
         return Scaffold(
           body: Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: _statusBarHeight),
+            child: Container(
+              color: Colors.white,
+              padding: EdgeInsets.only(
+                  top: (_selectedIndex == 2 || _selectedIndex == 3)
+                      ? _statusBarHeight
+                      : 0),
               child: _widgetOptions.elementAt(_selectedIndex),
             ),
           ),
