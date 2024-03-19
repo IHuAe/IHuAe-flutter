@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 import 'package:flutter_ihuae/chat/chat_item.dart';
 import 'package:flutter_ihuae/services/chat_data_service.dart';
 import 'package:flutter_ihuae/title_bar.dart';
-import 'package:provider/provider.dart';
 
 // 네번째 페이지
 class ChatPage extends StatefulWidget {
@@ -18,7 +17,22 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   bool _isExpanded = false;
   List<ChatData> chatDataList = [];
-  List<GlobalKey> globalkeys = [];
+
+  late ScrollController _topScrollController;
+  late ScrollController _msgScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _topScrollController = ScrollController();
+    _msgScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _msgScrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +42,20 @@ class _ChatPageState extends State<ChatPage> {
     return Consumer<ChatDataService>(
         builder: (context, chatDataService, child) {
       chatDataList = chatDataService.chatDataList;
-      globalkeys = List.generate(chatDataList.length, (index) => GlobalKey());
 
       List<Widget> chatDataItems = [];
       for (var i = 0; i < chatDataList.length; i++) {
         final chatData = chatDataList[i];
         chatDataItems.add(ChatItem(
-            key: globalkeys[i], messageContent: chatData.content, index: i));
+          messageContent: chatData.content,
+          index: i,
+        ));
       }
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        scrollLastMsg();
+      });
+
       return Scaffold(
         resizeToAvoidBottomInset: true,
         body: Column(
@@ -51,6 +71,7 @@ class _ChatPageState extends State<ChatPage> {
                     //메세지 말풍선 영역
                     Positioned.fill(
                       child: SingleChildScrollView(
+                        controller: _topScrollController,
                         child: SizedBox(
                           height: deviceHeight -
                               statusBarHeight -
@@ -60,28 +81,19 @@ class _ChatPageState extends State<ChatPage> {
                             children: [
                               Expanded(
                                 child: SingleChildScrollView(
+                                  controller: _msgScrollController,
                                   child: Container(
+                                    padding: EdgeInsets.only(
+                                        top: 64, bottom: 0, left: 0, right: 0),
                                     child: Column(
                                       children: chatDataItems,
                                     ),
                                   ),
                                 ),
-                                // child: ListView.builder(
-                                //   padding: EdgeInsets.only(
-                                //       top: 64, bottom: 0, left: 0, right: 0),
-                                //   itemCount:
-                                //       chatDataList.length, // 채팅 아이템 수에 맞게 조절하세요
-                                //   itemBuilder: (context, index) {
-                                //     return ChatItem(
-                                //         key: globalkeys[index],
-                                //         messageContent:
-                                //             chatDataList[index].content,
-                                //         index: index);
-                                //   },
-                                // ),
                               ), //입력 영역
                               InputContainer(
-                                  globalkeys: globalkeys,
+                                  topScrollController: _topScrollController,
+                                  msgScrollContorller: _msgScrollController,
                                   chatDataService: chatDataService),
                             ],
                           ),
@@ -114,6 +126,17 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  void scrollLastMsg() {
+    var scrollPosition = _msgScrollController.position;
+    if (scrollPosition.viewportDimension < scrollPosition.maxScrollExtent) {
+      _msgScrollController.animateTo(
+        scrollPosition.maxScrollExtent,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
   void _isExpandedChanger(bool isExpanded) {
     setState(() {
       _isExpanded = isExpanded;
@@ -125,10 +148,13 @@ class InputContainer extends StatefulWidget {
   const InputContainer({
     super.key,
     required this.chatDataService,
-    required this.globalkeys,
+    required this.msgScrollContorller,
+    required this.topScrollController,
   });
   final ChatDataService chatDataService;
-  final List<GlobalKey> globalkeys;
+
+  final ScrollController topScrollController;
+  final ScrollController msgScrollContorller;
 
   @override
   State<InputContainer> createState() => _InputContainerState();
@@ -142,7 +168,20 @@ class _InputContainerState extends State<InputContainer> {
     ),
   );
   String msgContent = "";
-  TextEditingController controller = TextEditingController();
+  late TextEditingController _controller;
+  FocusNode myFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,53 +191,53 @@ class _InputContainerState extends State<InputContainer> {
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
       color: Color(0xFFD8E0F3),
       child: TextFormField(
-          onChanged: (val) {
-            setState(() {
-              msgContent = val;
-            });
-          },
-          controller: controller,
-          decoration: InputDecoration(
-            enabledBorder: outlineInputBorder,
-            focusedBorder: outlineInputBorder,
-            counterText: '',
-            hintText: '입력하세요',
-            hintStyle: TextStyle(
-              fontFamily: 'SpoqaHanSansNeo',
-              fontWeight: FontWeight.w500,
-              color: Color.fromARGB(255, 156, 156, 156),
-              fontSize: 16,
-            ),
-            filled: true,
-            fillColor: Color(0xFFF8FAFF),
-            contentPadding: EdgeInsets.symmetric(horizontal: 14),
-          ),
-          textAlign: TextAlign.start,
-          textAlignVertical: TextAlignVertical.center,
-          maxLines: 1,
-          maxLength: 800,
-          maxLengthEnforcement: MaxLengthEnforcement.enforced,
-          style: TextStyle(
+        onChanged: (val) {
+          setState(() {
+            msgContent = val;
+          });
+        },
+        controller: _controller,
+        focusNode: myFocusNode,
+        decoration: InputDecoration(
+          enabledBorder: outlineInputBorder,
+          focusedBorder: outlineInputBorder,
+          counterText: '',
+          hintText: '입력하세요',
+          hintStyle: TextStyle(
             fontFamily: 'SpoqaHanSansNeo',
             fontWeight: FontWeight.w500,
-            color: Color(0xFF777777),
+            color: Color.fromARGB(255, 156, 156, 156),
             fontSize: 16,
           ),
-          textInputAction: TextInputAction.done,
-          onFieldSubmitted: (_) {
-            widget.chatDataService.createChatData(msgContent);
+          filled: true,
+          fillColor: Color(0xFFF8FAFF),
+          contentPadding: EdgeInsets.symmetric(horizontal: 14),
+        ),
+        textAlign: TextAlign.start,
+        textAlignVertical: TextAlignVertical.center,
+        maxLines: 1,
+        maxLength: 800,
+        maxLengthEnforcement: MaxLengthEnforcement.enforced,
+        style: TextStyle(
+          fontFamily: 'SpoqaHanSansNeo',
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF777777),
+          fontSize: 16,
+        ),
+        textInputAction: TextInputAction.done,
+        onFieldSubmitted: (_) {
+          widget.chatDataService.createChatData(msgContent);
 
-            setState(() {
-              msgContent = "";
-            });
-            controller.clear();
-            Scrollable.ensureVisible(
-                widget
-                    .globalkeys[widget.chatDataService.chatDataList.length - 1]
-                    .currentContext!,
-                alignment: 0.7,
-                duration: const Duration(milliseconds: 350));
-          }),
+          setState(() {
+            msgContent = "";
+          });
+
+          _controller.clear();
+
+          myFocusNode.requestFocus();
+        },
+        onTapOutside: (event) {},
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -20,13 +21,11 @@ class _CalendarPageState extends State<CalendarPage> {
   List<CalendarData> calendarDataList = [];
   Map calendarDataMap = HashMap();
   List<int> monthList = [];
-  int _currentPageIndex = 0;
+  int _currentPageIndex = -1;
   late PageController _viewPagerController;
 
   @override
   void initState() {
-    _viewPagerController = PageController();
-
     super.initState();
   }
 
@@ -49,6 +48,10 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (context, calendarDataService, child) {
         setCalendarDataList(calendarDataService);
         setCalendarDataMap();
+        if (_currentPageIndex == -1) {
+          initCurrentPageIndex(calendarDataService.dDay);
+        }
+        _viewPagerController = PageController(initialPage: _currentPageIndex);
         return Container(
           color: Color(0xFFF6F8Fd),
           child: Column(
@@ -74,7 +77,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   children: [
                     SizedBox(height: statusBarHeight),
                     TitleBar(title: "캘린더"),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
                     CalendarHandler(
                       monthList: monthList,
                       currentPageIndex: _currentPageIndex,
@@ -82,7 +85,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       handleViewPagerChanged: _handleViewPagerChanged,
                       updateCurrentPageIndex: _updateCurrentPageIndex,
                     ),
-                    SizedBox(height: 37),
+                    SizedBox(height: 27),
                     WeekHeaderContainer(
                         calendarPadding: calendarPadding, itemWidth: itemWidth),
                     SizedBox(height: 19),
@@ -112,6 +115,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   void setCalendarDataList(CalendarDataService cs) {
+    calendarDataList.clear();
     //시작한 달의 비활성화 날짜 가져오기
     CalendarData firstData = cs.calendarDataList[0];
     DateTime fistDate = firstData.dateValue;
@@ -159,11 +163,22 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
+  void initCurrentPageIndex(int dDay) {
+    int todayMonth = calendarDataList[dDay].dateValue.month;
+    for (var i = 0; i < monthList.length; i++) {
+      if (monthList[i] == todayMonth) {
+        _currentPageIndex = i;
+        return;
+      }
+    }
+  }
+
   void setCalendarDataMap() {
     int weekOfYearIndex = -1;
     int cnt1 = -1;
     int monthKey = 0;
     calendarDataMap.clear();
+
     for (CalendarData c in calendarDataList) {
       if (monthKey != c.dateValue.month) {
         weekOfYearIndex = -1;
@@ -324,7 +339,10 @@ class _CalendarHandlerState extends State<CalendarHandler> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: widget.calendarPadding),
+      padding: EdgeInsets.symmetric(
+          horizontal: widget.calendarPadding > 10
+              ? widget.calendarPadding - 10
+              : widget.calendarPadding),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -334,10 +352,15 @@ class _CalendarHandlerState extends State<CalendarHandler> {
                 widget.updateCurrentPageIndex(widget.currentPageIndex - 1);
               }
             },
-            child: Image.asset(
-              'images/btn_cal_left.png',
-              width: 12,
-              height: 18,
+            child: SizedBox(
+              //TODO width
+              width: 32,
+              height: 38,
+              child: Image.asset(
+                'images/btn_cal_left.png',
+                width: 12,
+                height: 18,
+              ),
             ),
           ),
           Text(
@@ -355,10 +378,14 @@ class _CalendarHandlerState extends State<CalendarHandler> {
                 widget.updateCurrentPageIndex(widget.currentPageIndex + 1);
               }
             },
-            child: Image.asset(
-              'images/btn_cal_right.png',
-              width: 12,
-              height: 18,
+            child: SizedBox(
+              width: 32,
+              height: 38,
+              child: Image.asset(
+                'images/btn_cal_right.png',
+                width: 12,
+                height: 18,
+              ),
             ),
           ),
         ],

@@ -21,22 +21,43 @@ class DiaryPage extends StatefulWidget {
 }
 
 class _DiaryPageState extends State<DiaryPage> {
-  int selectedPos = 0;
+  int selectedPos = -1;
+  List<GlobalKey> globalkeys = [];
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CalendarDataService>(
         builder: (context, calendarDataService, child) {
       return Consumer<DiaryDataService>(
           builder: (context, diaryDataService, child) {
-        selectedPos = calendarDataService.dDay;
+        selectedPos =
+            selectedPos == -1 ? calendarDataService.dDay : selectedPos;
+        globalkeys = List.generate(calendarDataService.calendarDataList.length,
+            (index) => GlobalKey());
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          //if(selectedPos)
+          Scrollable.ensureVisible(
+            globalkeys[selectedPos > 0 ? selectedPos - 1 : selectedPos]
+                .currentContext!,
+            duration: Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
+          );
+        });
+
         return Container(
           color: Color(0xFFF5F8FD),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TitleBar(title: "기록"),
-              //상단 주일 리스트 영역
-              WeekListContainer(setSelectedDayPos: _setSelectedDayPos),
+              //상단  리스트 영역
+              WeekListContainer(
+                  globalkeys: globalkeys,
+                  setSelectedDayPos: _setSelectedDayPos),
               //오늘의 기록 리스트 영역
               Expanded(
                 child: Stack(
@@ -67,7 +88,7 @@ class _DiaryPageState extends State<DiaryPage> {
                       right: 22.5,
                       bottom: 11.5,
                       child: WriteDiaryBtn(
-                        diaryDataService:diaryDataService,
+                          diaryDataService: diaryDataService,
                           dateID: calendarDataService
                               .calendarDataList[selectedPos].dateID),
                     ),

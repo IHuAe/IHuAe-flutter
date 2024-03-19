@@ -45,11 +45,13 @@ class ChatDataService extends ChangeNotifier {
     chatDataList =
         chatDataJsonList.map((json) => ChatData.fromJson(json)).toList();
 
-    for (ChatData d in chatDataList) {
-      int difference =
-          int.parse(DateTime.now().difference(d.regDateTime).inDays.toString());
+    for (var i = 0; i < chatDataList.length; i++) {
+      int difference = int.parse(DateTime.now()
+          .difference(chatDataList[i].regDateTime)
+          .inDays
+          .toString());
       if (difference >= 1) {
-        chatDataList.remove(d);
+        chatDataList.removeAt(i);
       }
     }
   }

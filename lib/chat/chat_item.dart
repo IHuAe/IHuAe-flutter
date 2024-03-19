@@ -6,6 +6,7 @@ class ChatItem extends StatelessWidget {
     required this.messageContent,
     required this.index,
   });
+
   final String messageContent;
   final int index;
 
