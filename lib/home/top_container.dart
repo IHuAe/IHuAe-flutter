@@ -61,7 +61,7 @@ class _TopContainerState extends State<TopContainer> {
                 ),
                 Expanded(
                   child: Text(
-                    EmoItem(emoNo: todayEmoNum).getEmoName(),
+                    EmoItem(emoNo: todayEmoNum).getEmoDescription(),
                     textAlign: TextAlign.end,
                     style: TextStyle(
                       fontFamily: 'SpoqaHanSansNeo',
