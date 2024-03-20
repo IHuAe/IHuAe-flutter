@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
 import 'package:flutter_ihuae/services/emo_item.dart';
 
-class WeekItem extends StatelessWidget {
-  const WeekItem({
+class DDayItem extends StatelessWidget {
+  const DDayItem({
     super.key,
     required this.index,
     required this.calendarDataService,
@@ -22,7 +22,7 @@ class WeekItem extends StatelessWidget {
         SizedBox(
           width: 20,
         ),
-        Container(
+        SizedBox(
           height: 30,
           width: 40,
           child: Stack(

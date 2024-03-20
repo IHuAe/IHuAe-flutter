@@ -1,16 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_ihuae/services/calendar_data_service.dart';
-import 'package:flutter_ihuae/services/diary_data_service.dart';
-
-import 'package:flutter_ihuae/title_bar.dart';
 import 'package:provider/provider.dart';
 
-import 'today_diary_list_container.dart';
-import 'today_qn_a_container.dart';
-import 'week_list_container.dart';
-import 'write_diary_btn.dart';
+import 'package:flutter_ihuae/services/calendar_data_service.dart';
+import 'package:flutter_ihuae/services/diary_data_service.dart';
+import 'package:flutter_ihuae/title_bar.dart';
+import 'package:flutter_ihuae/diary/d_day_list_container.dart';
+import 'package:flutter_ihuae/diary/today_qn_a_container.dart';
+import 'package:flutter_ihuae/diary/today_diary_list_container.dart';
+import 'package:flutter_ihuae/diary/write_diary_btn.dart';
 
 // 세번째 페이지
 class DiaryPage extends StatefulWidget {
@@ -54,7 +53,7 @@ class _DiaryPageState extends State<DiaryPage> {
             children: [
               TitleBar(title: "기록"),
               //상단  리스트 영역
-              WeekListContainer(
+              DDayListContainer(
                   globalkeys: globalkeys,
                   setSelectedDayPos: _setSelectedDayPos),
               //오늘의 기록 리스트 영역

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
-
-import 'emo_grid_container.dart';
+import 'package:flutter_ihuae/home/write_emo_dialog_grid_container.dart';
 
 class WriteEmoDialog extends StatefulWidget {
   const WriteEmoDialog({
@@ -74,7 +73,7 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
                   ),
                 ),
                 SizedBox(height: 25),
-                EmoGridContainer(
+                WriteEmoDialogGridContainer(
                   todayEmo: _todayEmo,
                   clickEmoGridItem: _clickEmoGridItem,
                 ),

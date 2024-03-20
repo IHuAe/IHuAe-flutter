@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_ihuae/home/emo_grid_item.dart';
+import 'package:flutter_ihuae/home/write_emo_dialog_grid_item.dart';
 
-class EmoGridContainer extends StatefulWidget {
-  const EmoGridContainer({
+class WriteEmoDialogGridContainer extends StatefulWidget {
+  const WriteEmoDialogGridContainer({
     super.key,
     required this.todayEmo,
     required this.clickEmoGridItem,
@@ -12,10 +12,12 @@ class EmoGridContainer extends StatefulWidget {
   final void Function(int) clickEmoGridItem;
 
   @override
-  State<EmoGridContainer> createState() => _EmoGridContainerState();
+  State<WriteEmoDialogGridContainer> createState() =>
+      _WriteEmoDialogGridContainerState();
 }
 
-class _EmoGridContainerState extends State<EmoGridContainer> {
+class _WriteEmoDialogGridContainerState
+    extends State<WriteEmoDialogGridContainer> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_ihuae/services/calendar_data_service.dart';
-import 'week_item.dart';
+import 'package:flutter_ihuae/diary/d_day_item.dart';
 
-class WeekListContainer extends StatefulWidget {
-  const WeekListContainer({
+class DDayListContainer extends StatefulWidget {
+  const DDayListContainer({
     super.key,
     required this.setSelectedDayPos,
     required this.globalkeys,
@@ -15,10 +14,10 @@ class WeekListContainer extends StatefulWidget {
   final List<GlobalKey> globalkeys;
 
   @override
-  State<WeekListContainer> createState() => _WeekListContainerState();
+  State<DDayListContainer> createState() => _DDayListContainerState();
 }
 
-class _WeekListContainerState extends State<WeekListContainer> {
+class _DDayListContainerState extends State<DDayListContainer> {
   ScrollController weekItemListController = ScrollController();
 
   @override
@@ -55,7 +54,7 @@ class _WeekListContainerState extends State<WeekListContainer> {
               ),
             ),
             SizedBox(height: 16),
-            Container(
+            SizedBox(
               height: 30,
               child: ListView.builder(
                 controller: weekItemListController,
@@ -66,11 +65,11 @@ class _WeekListContainerState extends State<WeekListContainer> {
                   return GestureDetector(
                     key: widget.globalkeys[index],
                     onTap: () {
-                      //if (index <= calendarDataService.dDay) {
-                      widget.setSelectedDayPos(index);
-                      //}
+                      if (index <= calendarDataService.dDay) {
+                        widget.setSelectedDayPos(index);
+                      }
                     },
-                    child: WeekItem(
+                    child: DDayItem(
                       calendarDataService: calendarDataService,
                       index: index,
                     ),

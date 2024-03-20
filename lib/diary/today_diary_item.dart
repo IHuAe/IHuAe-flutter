@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:flutter_ihuae/delete_dialog.dart';
 import 'package:flutter_ihuae/diary/write_diary_page.dart';
 import 'package:flutter_ihuae/services/diary_data_service.dart';
@@ -74,7 +73,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                       ),
                     ),
                     //제목 끝
-                    //내용 시작
+
                     GestureDetector(
                       onTap: () {
                         showDeleteDialog(context);
@@ -93,7 +92,8 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                 ),
               ),
             ),
-            //내용 끝
+
+            //내용 시작
             Row(
               children: [
                 Expanded(
@@ -129,6 +129,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                 ),
               ],
             ),
+            //내용 끝
           ],
         ));
   }
