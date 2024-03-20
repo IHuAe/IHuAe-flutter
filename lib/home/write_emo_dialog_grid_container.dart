@@ -20,7 +20,8 @@ class _WriteEmoDialogGridContainerState
     extends State<WriteEmoDialogGridContainer> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      margin: EdgeInsets.only(left: 10),
       height: 165,
       child: GridView.count(
         physics: NeverScrollableScrollPhysics(),
