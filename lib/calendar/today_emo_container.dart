@@ -79,8 +79,6 @@ class _TodayEmoContainerState extends State<TodayEmoContainer> {
                       width: double.infinity,
                       child: Text(
                         widget.selectedCalData.todayEmoContent,
-                        //maxLines: 2,  //TODO
-                        //overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontFamily: "SpoqaHanSansNeo",
                           fontWeight: FontWeight.w400,

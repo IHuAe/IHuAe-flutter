@@ -21,7 +21,7 @@ class _GuideContainerHandlerState extends State<GuideContainerHandler> {
       onTap: () {
         widget.isExpandedChanger(!widget.isExpanded);
       },
-      child: Container(
+      child: SizedBox(
         height: 47,
         width: 44,
         child: Transform(
