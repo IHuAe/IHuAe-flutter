@@ -160,7 +160,16 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        shadowColor: Colors.black,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Image.asset(
+            "images/toolbar_btn_back.png",
+            width: 7,
+            height: 10,
+          ),
+        ),
         centerTitle: true,
         title: Text(
           isEditor ? "문답 작성" : "문답 보기",

@@ -1,6 +1,8 @@
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:week_of_year/date_week_extensions.dart';
@@ -23,6 +25,8 @@ class _CalendarPageState extends State<CalendarPage> {
   List<int> monthList = [];
   int _currentPageIndex = -1;
   late PageController _viewPagerController;
+  bool isInit = false;
+  late CalendarData _selectedCalData;
 
   @override
   void initState() {
@@ -48,16 +52,32 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (context, calendarDataService, child) {
         setCalendarDataList(calendarDataService);
         setCalendarDataMap();
+        if (!isInit) {
+          _selectedCalData =
+              calendarDataService.calendarDataList[calendarDataService.dDay];
+        }
         if (_currentPageIndex == -1) {
           initCurrentPageIndex(calendarDataService.dDay);
         }
         _viewPagerController = PageController(initialPage: _currentPageIndex);
+
+        isInit = true;
         return Container(
           color: Color(0xFFF6F8Fd),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
+                // color: Colors.white,
+                // elevation: 4,
+                // margin: EdgeInsets.symmetric(horizontal: 0),
+                // shape: RoundedRectangleBorder(
+                //   borderRadius: BorderRadius.only(
+                //     bottomLeft: Radius.circular(23),
+                //     bottomRight: Radius.circular(23),
+                //   ),
+                // ),
+                // shadowColor: Colors.black.withOpacity(0.2),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(23),
@@ -92,21 +112,19 @@ class _CalendarPageState extends State<CalendarPage> {
                     CalendarContainer(
                       calendarDataService: calendarDataService,
                       itemWidth: itemWidth,
-                      calendarDataList: calendarDataList,
                       calendarDataMap: calendarDataMap,
                       monthList: monthList,
                       currentPageIndex: _currentPageIndex,
                       viewPagerController: _viewPagerController,
                       handleViewPagerChanged: _handleViewPagerChanged,
+                      updateSelectedCalData: _updateSelectedCalDataIndex,
                     ),
                     SizedBox(height: 19),
                   ],
                 ),
               ),
               Expanded(
-                child:
-                    TodayEmoContainer(calendarDataService: calendarDataService),
-              ),
+                  child: TodayEmoContainer(selectedCalData: _selectedCalData)),
             ],
           ),
         );
@@ -216,20 +234,29 @@ class _CalendarPageState extends State<CalendarPage> {
       curve: Curves.easeInOut,
     );
   }
+
+  void _updateSelectedCalDataIndex(CalendarData calData) {
+    setState(() {
+      _selectedCalData = calData;
+    });
+  }
 }
 
-class TodayEmoContainer extends StatelessWidget {
+class TodayEmoContainer extends StatefulWidget {
   const TodayEmoContainer({
     super.key,
-    required this.calendarDataService,
+    required this.selectedCalData,
   });
-
-  final CalendarDataService calendarDataService;
+  final CalendarData selectedCalData;
 
   @override
+  State<TodayEmoContainer> createState() => _TodayEmoContainerState();
+}
+
+class _TodayEmoContainerState extends State<TodayEmoContainer> {
+  @override
   Widget build(BuildContext context) {
-    int todayEmoId =
-        calendarDataService.calendarDataList[calendarDataService.dDay].todayEmo;
+    int todayEmoId = widget.selectedCalData.todayEmo;
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -249,10 +276,10 @@ class TodayEmoContainer extends StatelessWidget {
                 ),
               ),
               Container(
-                height: 158,
+                //height: 158,
                 margin: EdgeInsets.only(bottom: 27, left: 20, right: 20),
                 padding:
-                    EdgeInsets.only(top: 25, bottom: 0, left: 25, right: 25),
+                    EdgeInsets.only(top: 25, bottom: 31, left: 25, right: 25),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(8)),
                   color: Colors.white,
@@ -290,11 +317,9 @@ class TodayEmoContainer extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: Text(
-                        calendarDataService
-                            .calendarDataList[calendarDataService.dDay]
-                            .todayEmoContent,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        widget.selectedCalData.todayEmoContent,
+                        //maxLines: 2,  //TODO
+                        //overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontFamily: "SpoqaHanSansNeo",
                           fontWeight: FontWeight.w400,
@@ -353,7 +378,6 @@ class _CalendarHandlerState extends State<CalendarHandler> {
               }
             },
             child: SizedBox(
-              //TODO width
               width: 32,
               height: 38,
               child: Image.asset(
@@ -429,23 +453,23 @@ class CalendarContainer extends StatefulWidget {
     super.key,
     required this.itemWidth,
     required this.calendarDataService,
-    required this.calendarDataList,
     required this.calendarDataMap,
     required this.monthList,
     required this.currentPageIndex,
     required this.viewPagerController,
     required this.handleViewPagerChanged,
+    required this.updateSelectedCalData,
   });
 
   final double itemWidth;
   final CalendarDataService calendarDataService;
 
-  final List<CalendarData> calendarDataList;
   final Map calendarDataMap;
   final List<int> monthList;
   final int currentPageIndex;
   final PageController viewPagerController;
   final void Function(int) handleViewPagerChanged;
+  final void Function(CalendarData) updateSelectedCalData;
 
   @override
   State<CalendarContainer> createState() => _CalendarContainerState();
@@ -480,12 +504,24 @@ class _CalendarContainerState extends State<CalendarContainer> {
                       scrollDirection: Axis.horizontal,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: ((innerContext, innerIndex) {
-                        return CalendarItem(
-                          itemWidth: (widget.itemWidth),
-                          itemHeight: 58,
-                          calendarData: widget
-                                  .calendarDataMap[widget.monthList[pageIndex]]
-                              [weekIndex][innerIndex],
+                        return GestureDetector(
+                          onTap: () {
+                            if (widget
+                                .calendarDataMap[widget.monthList[pageIndex]]
+                                    [weekIndex][innerIndex]
+                                .isEnabled) {
+                              widget.updateSelectedCalData(
+                                  widget.calendarDataMap[
+                                          widget.monthList[pageIndex]]
+                                      [weekIndex][innerIndex]);
+                            }
+                          },
+                          child: CalendarItem(
+                            itemWidth: (widget.itemWidth),
+                            itemHeight: 58,
+                            calendarData: widget.calendarDataMap[widget
+                                .monthList[pageIndex]][weekIndex][innerIndex],
+                          ),
                         );
                       })),
                 );

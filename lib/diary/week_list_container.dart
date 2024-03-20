@@ -59,7 +59,6 @@ class _WeekListContainerState extends State<WeekListContainer> {
               height: 30,
               child: ListView.builder(
                 controller: weekItemListController,
-                padding: EdgeInsets.only(top: 0, bottom: 0, left: 20, right: 0),
                 scrollDirection: Axis.horizontal,
                 itemCount: calendarDataService
                     .calendarDataList.length, // RecyclerView의 아이템 수에 맞게 조절하세요
@@ -67,9 +66,9 @@ class _WeekListContainerState extends State<WeekListContainer> {
                   return GestureDetector(
                     key: widget.globalkeys[index],
                     onTap: () {
-                      if (index <= calendarDataService.dDay) {
-                        widget.setSelectedDayPos(index);
-                      }
+                      //if (index <= calendarDataService.dDay) {
+                      widget.setSelectedDayPos(index);
+                      //}
                     },
                     child: WeekItem(
                       calendarDataService: calendarDataService,

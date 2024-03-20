@@ -19,6 +19,9 @@ class WeekItem extends StatelessWidget {
 
     return Row(
       children: [
+        SizedBox(
+          width: 20,
+        ),
         Container(
           height: 30,
           width: 40,
@@ -55,9 +58,10 @@ class WeekItem extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(
-          width: 20,
-        )
+        if (index == calendarDataService.calendarDataList.length - 1)
+          SizedBox(
+            width: 20,
+          )
       ],
     );
   }

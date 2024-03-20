@@ -18,22 +18,6 @@ class _ChatPageState extends State<ChatPage> {
   bool _isExpanded = false;
   List<ChatData> chatDataList = [];
 
-  late ScrollController _topScrollController;
-  late ScrollController _msgScrollController;
-
-  @override
-  void initState() {
-    super.initState();
-    _topScrollController = ScrollController();
-    _msgScrollController = ScrollController();
-  }
-
-  @override
-  void dispose() {
-    _msgScrollController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
@@ -52,10 +36,6 @@ class _ChatPageState extends State<ChatPage> {
         ));
       }
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        scrollLastMsg();
-      });
-
       return Scaffold(
         resizeToAvoidBottomInset: true,
         body: Column(
@@ -71,17 +51,16 @@ class _ChatPageState extends State<ChatPage> {
                     //메세지 말풍선 영역
                     Positioned.fill(
                       child: SingleChildScrollView(
-                        controller: _topScrollController,
                         child: SizedBox(
                           height: deviceHeight -
                               statusBarHeight -
                               50 /*타이틀바*/ -
-                              57 /*TODO 바텀네비게이션*/,
+                              69 /*바텀네비게이션*/,
                           child: Column(
                             children: [
                               Expanded(
                                 child: SingleChildScrollView(
-                                  controller: _msgScrollController,
+                                  reverse: true,
                                   child: Container(
                                     padding: EdgeInsets.only(
                                         top: 64, bottom: 0, left: 0, right: 0),
@@ -91,10 +70,7 @@ class _ChatPageState extends State<ChatPage> {
                                   ),
                                 ),
                               ), //입력 영역
-                              InputContainer(
-                                  topScrollController: _topScrollController,
-                                  msgScrollContorller: _msgScrollController,
-                                  chatDataService: chatDataService),
+                              InputContainer(chatDataService: chatDataService),
                             ],
                           ),
                         ),
@@ -126,17 +102,6 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void scrollLastMsg() {
-    var scrollPosition = _msgScrollController.position;
-    if (scrollPosition.viewportDimension < scrollPosition.maxScrollExtent) {
-      _msgScrollController.animateTo(
-        scrollPosition.maxScrollExtent,
-        duration: Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-      );
-    }
-  }
-
   void _isExpandedChanger(bool isExpanded) {
     setState(() {
       _isExpanded = isExpanded;
@@ -148,13 +113,8 @@ class InputContainer extends StatefulWidget {
   const InputContainer({
     super.key,
     required this.chatDataService,
-    required this.msgScrollContorller,
-    required this.topScrollController,
   });
   final ChatDataService chatDataService;
-
-  final ScrollController topScrollController;
-  final ScrollController msgScrollContorller;
 
   @override
   State<InputContainer> createState() => _InputContainerState();
@@ -236,7 +196,9 @@ class _InputContainerState extends State<InputContainer> {
 
           myFocusNode.requestFocus();
         },
-        onTapOutside: (event) {},
+        onTapOutside: (event) {
+          myFocusNode.unfocus();
+        },
       ),
     );
   }

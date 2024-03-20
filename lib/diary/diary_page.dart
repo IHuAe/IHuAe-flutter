@@ -39,7 +39,6 @@ class _DiaryPageState extends State<DiaryPage> {
         globalkeys = List.generate(calendarDataService.calendarDataList.length,
             (index) => GlobalKey());
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          //if(selectedPos)
           Scrollable.ensureVisible(
             globalkeys[selectedPos > 0 ? selectedPos - 1 : selectedPos]
                 .currentContext!,
