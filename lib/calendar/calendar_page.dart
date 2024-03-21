@@ -1,5 +1,7 @@
 import 'dart:collection';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:week_of_year/date_week_extensions.dart';
@@ -62,60 +64,97 @@ class _CalendarPageState extends State<CalendarPage> {
         _viewPagerController = PageController(initialPage: _currentPageIndex);
 
         isInit = true;
-        return Container(
-          color: Color(0xFFF6F8Fd),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(23),
-                    bottomRight: Radius.circular(23),
+        return Column(
+          children: [
+            Card(
+              elevation: 6,
+              margin: EdgeInsets.all(0),
+              shadowColor: Colors.transparent,
+              child: Container(
+                height: statusBarHeight,
+                color: Colors.white,
+              ),
+            ),
+            Card(
+              elevation: 6,
+              margin: EdgeInsets.all(0),
+              shadowColor: Colors.transparent,
+              child: Container(
+                height: 50,
+                alignment: Alignment.center,
+                color: Colors.white,
+                child: Text(
+                  "캘린더",
+                  style: TextStyle(
+                    fontFamily: 'SpoqaHanSansNeo',
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF4A4A4A),
+                    fontSize: 16,
                   ),
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      spreadRadius: 2,
-                      blurRadius: 4,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(height: statusBarHeight),
-                    TitleBar(title: "캘린더"),
-                    SizedBox(height: 10),
-                    CalendarHandler(
-                      monthList: monthList,
-                      currentPageIndex: _currentPageIndex,
-                      calendarPadding: calendarPadding,
-                      updateCurrentPageIndex: _updateCurrentPageIndex,
-                    ),
-                    SizedBox(height: 27),
-                    CalendarWeekHeaderContainer(
-                        calendarPadding: calendarPadding, itemWidth: itemWidth),
-                    SizedBox(height: 19),
-                    CalendarContainer(
-                      calendarDataService: calendarDataService,
-                      itemWidth: itemWidth,
-                      calendarDataMap: calendarDataMap,
-                      monthList: monthList,
-                      currentPageIndex: _currentPageIndex,
-                      viewPagerController: _viewPagerController,
-                      handleViewPagerChanged: _handleViewPagerChanged,
-                      updateSelectedCalData: _updateSelectedCalDataIndex,
-                    ),
-                    SizedBox(height: 19),
-                  ],
                 ),
               ),
-              Expanded(
-                  child: TodayEmoContainer(selectedCalData: _selectedCalData)),
-            ],
-          ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  color: Color(0xFFF6F8Fd),
+                  child: Column(
+                    children: [
+                      Card(
+                        elevation: 4,
+                        color: Colors.white,
+                        margin: EdgeInsets.all(0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(23),
+                            bottomRight: Radius.circular(23),
+                          ),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(23),
+                              bottomRight: Radius.circular(23),
+                            ),
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(height: 10),
+                              CalendarHandler(
+                                monthList: monthList,
+                                currentPageIndex: _currentPageIndex,
+                                calendarPadding: calendarPadding,
+                                updateCurrentPageIndex: _updateCurrentPageIndex,
+                              ),
+                              SizedBox(height: 27),
+                              CalendarWeekHeaderContainer(
+                                  calendarPadding: calendarPadding,
+                                  itemWidth: itemWidth),
+                              SizedBox(height: 19),
+                              CalendarContainer(
+                                calendarDataService: calendarDataService,
+                                itemWidth: itemWidth,
+                                calendarDataMap: calendarDataMap,
+                                monthList: monthList,
+                                currentPageIndex: _currentPageIndex,
+                                viewPagerController: _viewPagerController,
+                                handleViewPagerChanged: _handleViewPagerChanged,
+                                updateSelectedCalData:
+                                    _updateSelectedCalDataIndex,
+                              ),
+                              SizedBox(height: 19),
+                            ],
+                          ),
+                        ),
+                      ),
+                      TodayEmoContainer(selectedCalData: _selectedCalData),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
