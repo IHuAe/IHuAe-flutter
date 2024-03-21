@@ -21,6 +21,7 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
   late CalendarData calendarData;
   int _todayEmo = 0;
   String _todayEmoContent = "";
+  FocusNode myFocusNode = FocusNode();
   @override
   void initState() {
     index = widget.calendarDataService.dDay;
@@ -41,19 +42,20 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.symmetric(horizontal: 19),
-      child: Container(
-        padding: EdgeInsets.only(top: 10, bottom: 20, left: 10, right: 20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(
-            width: 1.0,
+      child: SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.only(top: 10, bottom: 20, left: 10, right: 20),
+          decoration: BoxDecoration(
             color: Colors.white,
+            border: Border.all(
+              width: 1.0,
+              color: Colors.white,
+            ),
+            borderRadius: BorderRadius.circular(10),
           ),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Wrap(
-          children: [
-            Column(
+          child: Container(
+            height: 400,
+            child: Column(
               children: [
                 Row(
                   children: [
@@ -98,6 +100,7 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
                     onChanged: (value) {
                       _todayEmoContent = value;
                     },
+                    focusNode: myFocusNode,
                     maxLength: 100,
                     maxLines: 1,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
@@ -114,6 +117,9 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
                           fontSize: 14,
                           color: Color(0xFFB3B3B3),
                         )),
+                    onTapOutside: (event) {
+                      myFocusNode.unfocus();
+                    },
                   ),
                 ),
                 SizedBox(height: 23),
@@ -148,7 +154,7 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
