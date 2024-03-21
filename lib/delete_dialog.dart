@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:flutter_ihuae/services/diary_data_service.dart';
 
@@ -45,11 +47,12 @@ class DeleteDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // 취소 버튼
-                SizedBox(
+                Container(
                   height: 40,
                   width: 66,
-                  child: TextButton(
-                    onPressed: () {
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: () {
                       Navigator.pop(context);
                     },
                     child: Text(
@@ -66,11 +69,12 @@ class DeleteDialog extends StatelessWidget {
                     margin: EdgeInsets.symmetric(horizontal: 34),
                     child: Image.asset("images/delete_dialog_btn_bar.png")),
                 // 확인 버튼
-                SizedBox(
+                Container(
                   height: 40,
                   width: 66,
-                  child: TextButton(
-                    onPressed: () {
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: () {
                       diaryDataService.deleteDiaryData(dateID, diaryIndex);
                       Navigator.pop(context); // 팝업 닫기
                       if (isDetailPage) {

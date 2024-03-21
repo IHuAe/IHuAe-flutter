@@ -20,6 +20,7 @@ class WriteQnaPage extends StatefulWidget {
 
 class _WriteQnaPageState extends State<WriteQnaPage> {
   String ans = "";
+  FocusNode focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
   bool isEditor = false;
   @override
@@ -113,6 +114,7 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
                         controller: _scrollController,
                         child: TextFormField(
                           readOnly: !isEditor,
+                          focusNode: focusNode,
                           initialValue: widget.qnaData.answer,
                           onChanged: (value) {
                             setState(() {
@@ -138,6 +140,9 @@ class _WriteQnaPageState extends State<WriteQnaPage> {
                             ),
                             counterText: "",
                           ),
+                          onTapOutside: (event) {
+                            focusNode.unfocus();
+                          },
                         ),
                       ),
                     ),

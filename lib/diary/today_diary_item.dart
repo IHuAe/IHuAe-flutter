@@ -78,13 +78,16 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                       onTap: () {
                         showDeleteDialog(context);
                       },
-                      child: Text(
-                        "삭제",
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontFamily: 'SpoqaHanSansNeo',
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF4A4A4A),
+                      child: Container(
+                        width: 23,
+                        child: Text(
+                          "삭제",
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontFamily: 'SpoqaHanSansNeo',
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF4A4A4A),
+                          ),
                         ),
                       ),
                     ),

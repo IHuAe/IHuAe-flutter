@@ -27,6 +27,8 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
   bool isEditor = false;
 
   final ScrollController _scrollController = ScrollController();
+  FocusNode titleFocusNode = FocusNode();
+  FocusNode contentFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -88,9 +90,10 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
                           "확인",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF4A4A4A)),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF4A4A4A),
+                          ),
                         ),
                       ),
                     ),
@@ -212,6 +215,7 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
                   TextFormField(
                     readOnly: !isEditor,
                     initialValue: title,
+                    focusNode: titleFocusNode,
                     maxLength: 20,
                     maxLines: 1,
                     onChanged: (value) {
@@ -226,6 +230,12 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
                       color: Color(0xFF4A4A4A),
                     ),
                     decoration: InputDecoration(
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFE0E0E0)),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFE0E0E0)),
+                      ),
                       hintText: "제목 입력하기",
                       hintStyle: TextStyle(
                         fontFamily: "SpoqaHanSansNeo",
@@ -235,6 +245,9 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
                       ),
                       counterText: "",
                     ),
+                    onTapOutside: (event) {
+                      titleFocusNode.unfocus();
+                    },
                   ),
                   Expanded(
                     child: Container(
@@ -244,6 +257,7 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
                         child: TextFormField(
                           readOnly: !isEditor,
                           initialValue: content,
+                          focusNode: contentFocusNode,
                           onChanged: (value) {
                             setState(() {
                               content = value;
@@ -268,6 +282,9 @@ class _WriteDiaryPageState extends State<WriteDiaryPage> {
                             ),
                             counterText: "",
                           ),
+                          onTapOutside: (event) {
+                            contentFocusNode.unfocus();
+                          },
                         ),
                       ),
                     ),
