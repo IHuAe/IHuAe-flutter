@@ -48,33 +48,18 @@ class _TodayEmoContainerState extends State<TodayEmoContainer> {
               ),
             ],
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Image.asset(
-                      EmoItem(emoNo: todayEmoId).getEmoIconImage(),
-                    ),
-                    SizedBox(
-                      width: 18,
-                    ),
-                    Text(
-                      EmoItem(emoNo: todayEmoId).getEmoDescription(),
-                      style: TextStyle(
-                        fontFamily: "SpoqaHanSansNeo",
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Color(0xFF4A4A4A),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 19),
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    widget.selectedCalData.todayEmoContent,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Image.asset(
+                    EmoItem(emoNo: todayEmoId).getEmoIconImage(),
+                  ),
+                  SizedBox(
+                    width: 18,
+                  ),
+                  Text(
+                    EmoItem(emoNo: todayEmoId).getEmoDescription(),
                     style: TextStyle(
                       fontFamily: "SpoqaHanSansNeo",
                       fontWeight: FontWeight.w400,
@@ -82,9 +67,22 @@ class _TodayEmoContainerState extends State<TodayEmoContainer> {
                       color: Color(0xFF4A4A4A),
                     ),
                   ),
-                )
-              ],
-            ),
+                ],
+              ),
+              SizedBox(height: 19),
+              SizedBox(
+                width: double.infinity,
+                child: Text(
+                  widget.selectedCalData.todayEmoContent,
+                  style: TextStyle(
+                    fontFamily: "SpoqaHanSansNeo",
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Color(0xFF4A4A4A),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
         SizedBox(height: 27),

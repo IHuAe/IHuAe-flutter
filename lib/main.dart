@@ -73,6 +73,7 @@ class BasePage extends StatefulWidget {
 class _BasePageState extends State<BasePage> {
   int _selectedIndex = 0;
   double _statusBarHeight = 0.0;
+
   final List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     CalendarPage(),
@@ -89,6 +90,7 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     _statusBarHeight = MediaQuery.of(context).viewPadding.top;
+
     return Consumer<CalendarDataService>(
         builder: (context, calendarDataService, child) {
       return Consumer<QnaDataService>(
@@ -103,14 +105,13 @@ class _BasePageState extends State<BasePage> {
             ),
           ),
           bottomNavigationBar: SizedBox(
-            height: 69,
+            height: 100,
             child: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
               backgroundColor: Colors.white,
               showSelectedLabels: false, // 선택된 라벨 보이기/숨기기
               showUnselectedLabels: false, // 선택되지 않은 라벨 보이기/숨기기
               elevation: 0,
-
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: ImageIcon(AssetImage('images/tab_on_ic_home.png')),

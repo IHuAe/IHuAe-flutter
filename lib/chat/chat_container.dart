@@ -27,7 +27,7 @@ class ChatContainer extends StatelessWidget {
     }
     return SingleChildScrollView(
       child: SizedBox(
-        height: deviceHeight - statusBarHeight - 50 /*타이틀바*/ - 69 /*바텀네비게이션*/,
+        height: deviceHeight - statusBarHeight - 50 /*타이틀바*/ - 100 /*바텀네비게이션*/,
         child: Column(
           children: [
             Expanded(
