@@ -78,7 +78,7 @@ class _TodayDiaryItemState extends State<TodayDiaryItem> {
                       onTap: () {
                         showDeleteDialog(context);
                       },
-                      child: Container(
+                      child: SizedBox(
                         width: 23,
                         child: Text(
                           "삭제",

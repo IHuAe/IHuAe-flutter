@@ -98,7 +98,8 @@ class _BasePageState extends State<BasePage> {
             child: Container(
               color: Colors.white,
               padding: EdgeInsets.only(
-                  top: (_selectedIndex == 2 || _selectedIndex == 3)
+                  top: (_selectedIndex !=
+                          0) //(_selectedIndex == 2 || _selectedIndex == 3)
                       ? _statusBarHeight
                       : 0),
               child: _widgetOptions.elementAt(_selectedIndex),

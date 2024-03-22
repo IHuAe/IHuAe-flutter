@@ -53,7 +53,8 @@ class _WriteEmoDialogState extends State<WriteEmoDialog> {
             ),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Container(
+          child: SizedBox(
+            width: 322,
             height: 400,
             child: Column(
               children: [

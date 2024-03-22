@@ -1,7 +1,5 @@
 import 'dart:collection';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:week_of_year/date_week_extensions.dart';
@@ -48,7 +46,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
     double calendarPadding = 36;
     double itemWidth = (displaySizeWidth - calendarPadding * 2) / 7;
-    double statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
     return Consumer<CalendarDataService>(
       builder: (context, calendarDataService, child) {
@@ -66,34 +63,7 @@ class _CalendarPageState extends State<CalendarPage> {
         isInit = true;
         return Column(
           children: [
-            Card(
-              elevation: 6,
-              margin: EdgeInsets.all(0),
-              shadowColor: Colors.transparent,
-              child: Container(
-                height: statusBarHeight,
-                color: Colors.white,
-              ),
-            ),
-            Card(
-              elevation: 6,
-              margin: EdgeInsets.all(0),
-              shadowColor: Colors.transparent,
-              child: Container(
-                height: 50,
-                alignment: Alignment.center,
-                color: Colors.white,
-                child: Text(
-                  "캘린더",
-                  style: TextStyle(
-                    fontFamily: 'SpoqaHanSansNeo',
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF4A4A4A),
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-            ),
+            TitleBar(title: "캘린더"),
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
